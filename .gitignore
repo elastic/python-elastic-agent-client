@@ -16,3 +16,5 @@ __pycache__
 
 **/venv
 
+# temp dir for proto file
+.proto

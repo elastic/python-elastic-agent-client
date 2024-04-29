@@ -1,0 +1,493 @@
+// Copyright Elasticsearch B.V. and/or licensed to Elasticsearch B.V. under one
+// or more contributor license agreements. Licensed under the Elastic License;
+// you may not use this file except in compliance with the Elastic License.
+
+syntax = "proto3";
+
+package proto;
+
+option cc_enable_arenas = true;
+option go_package = "pkg/proto;proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+import "elastic-agent-client-deprecated.proto";
+
+service ElasticAgent {
+    // Called by the client to provide the Elastic Agent the state of the application over the V2
+    // protocol.
+    //
+    // Implements a reconciliation loop where a component periodically tells the agent what its
+    // current observed configuration is, and the agent replies with the configuration it is
+    // expected to be running.
+    //
+    // Each configuration block included in the expected message is accompanied by an index or
+    // revision number. Corresponding observed messages do not need to waste CPU copying the entire
+    // applied configuration back to the agent on each checkin; instead, they can simply echo back
+    // the index or revision number from the expected message upon successful reconciliation.
+    // Configurations in large deployments can be 1MB or more.
+    //
+    // A `CheckinObserved` must be streamed at least every 30 seconds or it will result in the set
+    // of units automatically marked as FAILED. After several missed checkins the Elastic Agent will
+    // force kill the entire process and restart it.
+    //
+    // The V2 protocol is designed to operate knowing as little as possible about the units and
+    // components it communicates with. Each unit or component can accept arbitrary user
+    // configuration from the agent policy which is encoded in a `google.protobuf.Struct source`
+    // field. The agent does not fully parse or inspect the contents of the source field and
+    // passes it through to components unmodified.
+    //
+    // Use of the source field allows the input configurations to evolve without needing to modify
+    // the control protocol itself. In some cases commonly used or important fields are extracted as
+    // a dedicated message type, but these definitions do not completely define the contents of the
+    // source field which is free to contain additional fields.
+    rpc CheckinV2(stream CheckinObserved) returns (stream CheckinExpected);
+
+    // Called by the client after receiving connection info to allow the Elastic Agent to stream action
+    // requests to the application and the application stream back responses to those requests.
+    //
+    // Request and response is swapped here because the Elastic Agent sends the requests in a stream
+    // to the connected process. The order of response from the process does not matter, it is acceptable
+    // for the response order to be different then the request order.
+    rpc Actions(stream ActionResponse) returns (stream ActionRequest);
+
+    // DEPRECATED: DO NOT USE
+    //
+    // Called by the client to provide the Elastic Agent the state of the application.
+    //
+    // A `StateObserved` must be streamed at least every 30 seconds or it will result in the
+    // application be automatically marked as FAILED, and after 60 seconds the Elastic Agent will
+    // force kill the entire process and restart it.
+    //
+    // Messages definitions are preserved in elastic-agent-client-deprecated.proto.
+    rpc Checkin(stream StateObserved) returns (stream StateExpected);
+}
+
+// Features that the connection between the client and the server supports.
+enum ConnectionSupports {
+    // Checkin chunking support.
+    CheckinChunking = 0;
+}
+
+// State codes for the current state.
+enum State {
+    // STARTING is an optional observed state indicating the unit is doing work to start before
+    // transitioning to HEALTHY.
+    STARTING = 0;
+    // CONFIGURING is an optional observed state indicating the unit is started and being configured
+    // prior to transitioning to HEALTHY. Typically reported when a units current configuration does
+    // not match its expected configuration.
+    CONFIGURING = 1;
+    // HEALTHY is a required observed and expected state. The agent sends an expected state of
+    // HEALTHY when a unit should be started and running.
+    HEALTHY = 2;
+    // DEGRADED is an optional observed state indicating the unit experienced a non-fatal error.
+    DEGRADED = 3;
+    // FAILED is an optional observed state indicating the unit experienced a fatal error.
+    FAILED = 4;
+    // STOPPING is an optional observed state indicating the unit is doing the work required to STOP
+    // before transitioning to STOPPED.
+    STOPPING = 5;
+    // STOPPED is a required observed and expected state. The agent sends an expected state of
+    // STOPPED when a unit should stop running.
+    STOPPED = 6;
+}
+
+// Type of unit.
+enum UnitType {
+    INPUT = 0;
+    OUTPUT = 1;
+}
+
+// Log level for the unit.
+enum UnitLogLevel {
+    ERROR = 0;
+    WARN = 1;
+    INFO = 2;
+    DEBUG = 3;
+    TRACE = 4;
+}
+
+// Package metadata provided in the meta field of a unit.
+message Package {
+    // Source is the original configuration of this Package in the agent policy. Only standard
+    // fields are defined as explicit types, additional fields can be parsed from source.
+    google.protobuf.Struct source = 1;
+    // Name of the package.
+    string name = 2;
+    // Version of the package.
+    string version = 3;
+}
+
+// Metadata provided in the meta field of a unit.
+message Meta {
+    // Source is the original configuration of this Meta object in the agent policy. Only standard
+    // fields are defined as explicit types, additional fields can be parsed from source.
+    google.protobuf.Struct source = 1;
+    // Package metadata.
+    Package package = 2;
+}
+
+// Data stream defined in either top-level unit or in multiple streams in the unit.
+message DataStream {
+    // Source is the original configuration of this DataStream object in the agent policy. Only
+    // standard fields are defined as explicit types, additional fields can be parsed from source.
+    google.protobuf.Struct source = 1;
+    // Dataset for the stream.
+    string dataset = 2;
+    // Type for the stream.
+    string type = 3;
+    // Namespace for the stream.
+    string namespace = 4;
+}
+
+// Stream defined in a configuration.
+message Stream {
+    // Source is the original configuration of this Stream object in the agent policy. Only standard
+    // fields are defined as explicit types, additional fields can be parsed from source.
+    //
+    // This source field will almost always contain arbitrary unit configuration fields beyond those
+    // explicitly defined in this message type.
+    google.protobuf.Struct source = 1;
+    string id = 2;
+    DataStream data_stream = 3;
+}
+
+// A units expected configuration.
+message UnitExpectedConfig {
+    // Source is the original configuration of this unit configuration object in the agent policy.
+    // Only standard fields are defined as explicit types, additional fields can be parsed from source.
+    //
+    // This source field will almost always contain arbitrary unit configuration fields beyond those
+    // explicitly defined in this message type.
+    google.protobuf.Struct source = 1;
+    // Unique ID for the Unit.
+    string id = 2;
+    // Type of the unit.
+    string type = 3;
+    // Name of the unit.
+    string name = 4;
+    // Revision of the unit.
+    uint64 revision = 5;
+    // Metadata information of the unit.
+    Meta meta = 6;
+    // Unit-level data stream.
+    DataStream data_stream = 7;
+    // Multiple streams per unit.
+    repeated Stream streams = 8;
+}
+
+// A unit that is part of a collector/shipper.
+message UnitExpected {
+    // Unique ID of the unit.
+    string id = 1;
+    // Unit type.
+    UnitType type = 2;
+    // Expected state of the unit. Will always be one of HEALTHY or STOPPED.
+    State state = 3;
+    // Index or revision of the expected configuration. When the expected configuration changes the
+    // agent will increment this number and the UnitExpectedConfig field will be populated.
+    uint64 config_state_idx = 4;
+    // Current expected configuration. Omitted if the client reports it has applied the current
+    // configuration.
+    UnitExpectedConfig config = 5;
+    // Log level of the unit.
+    UnitLogLevel log_level = 6;
+}
+
+// Agent information that the component might want to use for its events,
+// including the package version, which components should report instead
+// of their own version.
+//
+// Sent on component start up as part of StartUpInfo and on the first checkin
+// expected response to the component.
+message AgentInfo {
+    // ID is the Elastic Agent's unique ID.
+    string id = 1;
+    // Version is the package version of the running Elastic Agent.
+    string version = 2;
+    // Snapshot is true when the running Elastic Agent is a snapshot version.
+    bool snapshot = 3;
+}
+
+// Feature flags configurations.
+message Features {
+    // Source is the original source of the features. All values from the features
+    // are included here even if other concrete fields are defined for this message.
+    google.protobuf.Struct source = 1;
+
+    FQDNFeature fqdn = 2;
+}
+
+// FQDN feature flag indicates to use FQDN for host.name instead of hostname.
+message FQDNFeature {
+    bool enabled = 1;
+}
+
+// Elastic APM TLS config
+message ElasticAPMTLS {
+    bool skip_verify = 1;
+    string server_cert = 2;
+    string server_ca = 3;
+}
+
+// Elastic APM configuration
+message ElasticAPM {
+    ElasticAPMTLS tls = 1;
+    string environment = 2;
+    string api_key = 3;
+    string secret_token = 4;
+    repeated string hosts = 5;
+    string global_labels = 6;
+}
+
+// APM configuration
+message APMConfig {
+    ElasticAPM elastic = 1;
+}
+
+// Component-level configuration.
+message Component {
+    ComponentLimits limits = 1;
+    optional APMConfig apm_config = 2;
+}
+
+// Limits to configure for the currently running component.
+message ComponentLimits {
+  // Source is the original source of the limits. All values from the limits
+  // are included here even if other concrete fields are defined for this message.
+  google.protobuf.Struct source = 1;
+
+  // GoMaxProcs limits the number of operating system threads that can execute user-level Go code simultaneously.
+  // Translates into GOMAXPROCS Go runtime setting for the component implemented in Go.
+  // Should be ignored by non-Go components.
+  // If set to `0` the client should use all the available CPUs.
+  uint64 go_max_procs = 2;
+}
+
+// A set of units and their expected states and configuration.
+message CheckinExpected {
+    // Units is the expected units the component should be running. Note that units can be added or
+    // removed from this list any time as the agent policy is edited. Units that should be removed
+    // will first have their expected state set to STOPPED, and then will be removed from this list
+    // once their observed state has also been repoted as STOPPED to allow for graceful shutdown.
+    repeated UnitExpected units = 1;
+    // Agent info is provided only on first CheckinExpected response to the component.
+    AgentInfo agent_info = 2;
+
+    // Features are the expected feature flags configurations. Can apply to either components or
+    // individual units depending on the flag and its implementation. Omitted if the client reports
+    // it has applied the current configuration. Added in Elastic Agent v8.7.1.
+    Features features = 3;
+
+    // Index or revision of the expected feature flags configuration. When the expected
+    // configuration changes the agent will increment this number and the Features field will be
+    // populated.
+    uint64 features_idx = 4;
+
+    // Component is the expected component configuration. Contains configuration expected to apply
+    // globally to the entire component process. Omitted if the client reports it has applied the
+    // current configuration. Added in Elastic Agent v8.10.0.
+    Component component = 5;
+    // Index or revision of the expected component configuration. When the expected configuration
+    // changes the agent will increment this number and the Component field will be populated.
+    uint64 component_idx = 6;
+
+    // When a units timestamp is provided then the set of units could not all fit inside this single message
+    // and it was split across multiple messages. Each message chunk must have the same units timestamp, in
+    // the case that the client gets a new message with a different timestamp and its newer than the other
+    // timestamp then it should take that new message chunk as a start of a new message set. To finish the a
+    // set of messages with the same timestamp, the last chunk should be an empty set of units.
+    google.protobuf.Timestamp units_timestamp = 7;
+}
+
+// Observed status for a unit.
+//
+// Contains the currently applied `config_state_idx` (0 in the case of initial start, 1 is the first
+// applied config index) along with the status of the application. In the case that the sent `config_state_idx`
+// doesn't match the expected `config_state_idx` that Elastic Agent expects, the unit is always marked as
+// `CONFIGURING` and a new `UnitExpected` will be sent to so it can have the latest configuration.
+message UnitObserved {
+    // Unique ID of the unit.
+    string id = 1;
+    // Unit type.
+    UnitType type = 2;
+    // Index or revision of the currently applied configuration.
+    uint64 config_state_idx = 3;
+    // Current state of the unit.
+    State state = 4;
+    // Human readable message for the state of the unit.
+    // Exposed to users to provide more detail about the state for this single unit.
+    string message = 5;
+    // Payload for the current state.
+    google.protobuf.Struct payload = 6;
+}
+
+// Observed version information for the running program.
+message CheckinObservedVersionInfo {
+    // Name of the binary.
+    string name = 1;
+    // Additional metadata about the binary.
+    map<string, string> meta = 3;
+    // VCS commit hash of the binary.
+    string build_hash = 4;
+}
+
+// Observed statuses and configuration for defined units.
+//
+// In the case that a unit is missing from the observation then the Elastic Agent will mark that missing unit
+// as `STARTING` and send a new `UnitExpected` for the missing unit.
+message CheckinObserved {
+    // Token that is used to uniquely identify the connection to the Elastic Agent.
+    string token = 1;
+    // Units observed state.
+    repeated UnitObserved units = 2;
+    // Version information about the running program. Should always be included on first checkin, and not again unless
+    // one of the values have changed.
+    optional CheckinObservedVersionInfo version_info = 3;
+
+    // Deprecated: sending the feature flag configuration from client back to agent is unnecessary.
+    reserved "features";
+    reserved 4;
+
+    // Index or revision of the currently feature flags configuration.
+    uint64 features_idx = 5;
+
+    // Index or revision of the currently component configuration.
+    uint64 component_idx = 6;
+
+    // When a units timestamp is provided then the set of units could not all fit inside this single message
+    // and it was split across multiple messages. Each message chunk must have the same units timestamp, in
+    // the case that the client gets a new message with a different timestamp and its newer than the other
+    // timestamp then it should take that new message chunk as a start of a new message set. To finish the a
+    // set of messages with the same timestamp, the last chunk should be an empty set of units.
+    google.protobuf.Timestamp units_timestamp = 7;
+
+    // Supports provides information to the agent about extra features this client supports. Should always be included
+    // on first checkin, and not again unless upon reconnect.
+    repeated ConnectionSupports supports = 8;
+
+    // Optional field allowing the client to report its own PID. This is useful for applications like endpoint,
+    // where agent has less control over the binary.
+    uint64 pid = 9;
+}
+
+// A action request is streamed from the Elastic Agent to the application so an action can be performed
+// by the connected application.
+message ActionRequest {
+    // Type of action being performed.
+    enum Type {
+        // Custom action (registered by the unit). Examples include endpoint response actions and OSQuery results.
+        CUSTOM = 0;
+        // Diagnostics collection action. Implemented by components and units when they wish to
+        // include custom information in diagnostics archives. If unimplemented, an ActionResponse
+        // with the FAILED status is required.
+        DIAGNOSTICS = 1;
+    }
+    // The level that the action is operating on.
+    // Currently only used for diagnostics. 
+    enum Level {
+       // All diagnostics
+        ALL = 0;
+        // Component level action
+        COMPONENT = 1;
+        // Unit level action
+        UNIT = 2;
+    }
+    // Unique ID of the action.
+    string id = 1;
+    // Name of the action (name is ignored for DIAGNOSTICS).
+    string name = 2;
+    // JSON encoded parameters for the action.
+    bytes params = 3;
+    // Unique ID of the unit (only used with V2).
+    string unit_id = 4;
+    // Type of the unit (only used with V2).
+    UnitType unit_type = 5;
+    // Type of action to be performed (only used with V2).
+    Type type = 6;
+    // Level marks the action as either operating on a component, or a unit.
+    // If level=component, then the consumer should ignore the unit_id and unit_type fields. 
+    Level level = 7;
+}
+
+message ActionDiagnosticUnitResult {
+    // Human readable name of the diagnostic result content.
+    string name = 1;
+    // Filename to use to store the diagnostic to the disk.
+    string filename = 2;
+    // Human readable description of the information this diagnostic provides.
+    string description = 3;
+    // Content-Type of the resulting content.
+    string content_type = 4;
+    // Actual file content.
+    bytes content = 5;
+    // Timestamp the content was generated at.
+    google.protobuf.Timestamp generated = 6;
+}
+
+// An action response is streamed from the application back to the Elastic Agent to provide a result to
+// an action request.
+message ActionResponse {
+    // Status result of the action.
+    enum Status {
+        // Action was successful.
+        SUCCESS = 0;
+        // Action has failed or is unimplemented.
+        FAILED = 1;
+    }
+    // Token that is used to uniquely identify the application to agent. When agent started this
+    // application it would have provided it this token.
+    string token = 1;
+    // Unique ID of the action.
+    string id = 2;
+    // Status of the action.
+    Status status = 3;
+    // JSON encoded result for the action (empty when diagnostic action response).
+    bytes result = 4;
+    // Specific result for the diagnostics action.
+    repeated ActionDiagnosticUnitResult diagnostic = 5;
+}
+
+// Services that the client is allowed to use over the connection.
+enum ConnInfoServices {
+    // V1 checkin service.
+    Checkin = 0;
+    // V2 checkin service.
+    CheckinV2 = 1;
+    // Key-value store service.
+    Store = 2;
+    // Artifact store service.
+    Artifact = 3;
+    // Log service.
+    Log = 4;
+}
+
+// Information sent to component on startup containing the necessary information
+// for the component to connect back to the Elastic Agent and the agent details.
+//
+// This is normally sent through stdin and should never be sent across a network
+// un-encrypted.
+message StartUpInfo {
+    // GRPC connection address.
+    string addr = 1;
+    // Server name to use when connecting over TLS.
+    string server_name = 2;
+    // Token that the application should send as the unique identifier when connecting over the GRPC.
+    string token = 3;
+    // CA certificate.
+    bytes ca_cert = 4;
+    // Peer certificate.
+    bytes peer_cert = 5;
+    // Peer private key.
+    bytes peer_key = 6;
+    // Allowed services that spawned process can use. (only used in V2)
+    repeated ConnInfoServices services = 7;
+    // Supports provides information to the client about extra features this server supports.
+    repeated ConnectionSupports supports = 8;
+    // Maximum message size that the client can use (in bytes).
+    uint32 max_message_size = 9;
+    // Agent information, including the agent package version, which should be
+    // presented in user-visible fields and messages instead of the build
+    // version of the running component.
+    AgentInfo agent_info = 10;
+}
