@@ -36,6 +36,11 @@ class UnitLogLevel(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     DEBUG: _ClassVar[UnitLogLevel]
     TRACE: _ClassVar[UnitLogLevel]
 
+class AgentManagedMode(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    MANAGED: _ClassVar[AgentManagedMode]
+    STANDALONE: _ClassVar[AgentManagedMode]
+
 class ConnInfoServices(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     __slots__ = ()
     Checkin: _ClassVar[ConnInfoServices]
@@ -58,6 +63,8 @@ WARN: UnitLogLevel
 INFO: UnitLogLevel
 DEBUG: UnitLogLevel
 TRACE: UnitLogLevel
+MANAGED: AgentManagedMode
+STANDALONE: AgentManagedMode
 Checkin: ConnInfoServices
 CheckinV2: ConnInfoServices
 Store: ConnInfoServices
@@ -141,14 +148,16 @@ class UnitExpected(_message.Message):
     def __init__(self, id: _Optional[str] = ..., type: _Optional[_Union[UnitType, str]] = ..., state: _Optional[_Union[State, str]] = ..., config_state_idx: _Optional[int] = ..., config: _Optional[_Union[UnitExpectedConfig, _Mapping]] = ..., log_level: _Optional[_Union[UnitLogLevel, str]] = ...) -> None: ...
 
 class AgentInfo(_message.Message):
-    __slots__ = ("id", "version", "snapshot")
+    __slots__ = ("id", "version", "snapshot", "mode")
     ID_FIELD_NUMBER: _ClassVar[int]
     VERSION_FIELD_NUMBER: _ClassVar[int]
     SNAPSHOT_FIELD_NUMBER: _ClassVar[int]
+    MODE_FIELD_NUMBER: _ClassVar[int]
     id: str
     version: str
     snapshot: bool
-    def __init__(self, id: _Optional[str] = ..., version: _Optional[str] = ..., snapshot: bool = ...) -> None: ...
+    mode: AgentManagedMode
+    def __init__(self, id: _Optional[str] = ..., version: _Optional[str] = ..., snapshot: bool = ..., mode: _Optional[_Union[AgentManagedMode, str]] = ...) -> None: ...
 
 class Features(_message.Message):
     __slots__ = ("source", "fqdn")
