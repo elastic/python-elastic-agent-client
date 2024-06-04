@@ -8,5 +8,8 @@ setup(
     author_email='sean.story@elastic.co',
     license='Elastic v2',
     packages=['es_agent_client'],
-    install_requires=[], # TODO
+    install_requires=[
+        'grpcio>=1.62',
+        'protobuf>=4.25',
+    ],
 )

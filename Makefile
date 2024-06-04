@@ -14,5 +14,8 @@ generate: bin/python
 install: bin/python generate
 	bin/pip install -e .
 
+exe: bin/python
+	bin/pyoxidizer build
+
 clean:
-	rm -rf bin lib include .proto
+	rm -rf bin lib include .proto build
