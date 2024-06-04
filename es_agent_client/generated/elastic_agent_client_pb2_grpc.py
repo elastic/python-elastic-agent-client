@@ -2,8 +2,8 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-import elastic_agent_client_deprecated_pb2 as elastic__agent__client__deprecated__pb2
-import elastic_agent_client_pb2 as elastic__agent__client__pb2
+from . import elastic_agent_client_deprecated_pb2 as elastic__agent__client__deprecated__pb2
+from . import elastic_agent_client_pb2 as elastic__agent__client__pb2
 
 
 class ElasticAgentStub(object):
