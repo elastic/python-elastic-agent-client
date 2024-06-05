@@ -202,6 +202,8 @@ def make_exe():
     # Produce a PythonExecutable from a Python distribution, embedded
     # resources, and other options. The returned object represents the
     # standalone executable that will be built.
+    policy.resources_location_fallback = "filesystem-relative:lib"
+
     exe = dist.to_python_executable(
         name="python-elastic-agent-client",
 
@@ -212,9 +214,11 @@ def make_exe():
         # If no argument passed, the default `PythonInterpreterConfig` is used.
         config=python_config,
     )
-    exe.add_python_resources(exe.pip_install(["grpcio"]))
+    for resource in exe.pip_download(["grpcio"]):
+        resource.add_location = "filesystem-relative:lib"
+        exe.add_python_resource(resource)
     exe.add_python_resources(exe.pip_install(["protobuf"]))
-    exe.add_python_resources(exe.setup_py_install(package_path=CWD))
+    exe.add_python_resources(exe.pip_install(["/Users/seanstory/Desktop/Dev/python-elastic-agent-client"])) # TODO
 
 
     # Install tcl/tk support files to a specified directory so the `tkinter` Python

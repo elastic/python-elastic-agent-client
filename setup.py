@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 setup(
     name='es_agent_client',
     version='0.0.1',
@@ -7,7 +7,7 @@ setup(
     author='Sean Story',
     author_email='sean.story@elastic.co',
     license='Elastic v2',
-    packages=['es_agent_client'],
+    packages=find_packages(),
     install_requires=[
         'grpcio>=1.62',
         'protobuf>=4.25',
