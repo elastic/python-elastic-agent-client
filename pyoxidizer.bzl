@@ -202,7 +202,7 @@ def make_exe():
     # Produce a PythonExecutable from a Python distribution, embedded
     # resources, and other options. The returned object represents the
     # standalone executable that will be built.
-    policy.resources_location_fallback = "filesystem-relative:lib"
+    policy.resources_location_fallback = "filesystem-relative:py_lib"
 
     exe = dist.to_python_executable(
         name="python-elastic-agent-client",
@@ -215,7 +215,7 @@ def make_exe():
         config=python_config,
     )
     for resource in exe.pip_download(["grpcio"]):
-        resource.add_location = "filesystem-relative:lib"
+        resource.add_location = "filesystem-relative:py_lib"
         exe.add_python_resource(resource)
     exe.add_python_resources(exe.pip_install(["protobuf"]))
     exe.add_python_resources(exe.pip_install(["/Users/seanstory/Desktop/Dev/python-elastic-agent-client"])) # TODO
