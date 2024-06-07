@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import sys
+import time
 
 from es_agent_client.util.logger import logger
 from es_agent_client.client import VersionInfo, V2Options
@@ -27,7 +28,11 @@ def run():
     )
     opts = V2Options()
     c = new_v2_from_reader(sys.stdin.buffer, ver, opts)
-    logger.info("reached the end (for now!)")
+    logger.info("Don't. Stop me. Nowwwww. Cause we're...")
+    while True:
+        logger.info("... having a good time")
+        time.sleep(10)
+
     # TODO
 
 
