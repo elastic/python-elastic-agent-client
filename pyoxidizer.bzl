@@ -218,7 +218,7 @@ def make_exe():
         resource.add_location = "filesystem-relative:py_lib"
         exe.add_python_resource(resource)
     exe.add_python_resources(exe.pip_install(["protobuf"]))
-    exe.add_python_resources(exe.pip_install(["/Users/seanstory/Desktop/Dev/python-elastic-agent-client"])) # TODO
+    exe.add_python_resources(exe.pip_install([CWD]))
 
 
     # Install tcl/tk support files to a specified directory so the `tkinter` Python
