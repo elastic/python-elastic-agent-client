@@ -46,8 +46,11 @@ The binary is produced with `make exe`, and is controlled via the `pyoxidizer.bz
 ### TODO List
 - [ ] Translate the [Go fake component](https://github.com/elastic/elastic-agent/blob/main/pkg/component/fake/component/main.go) to python
   - [ ] Translate the necessary [Go client helpers](https://github.com/elastic/elastic-agent-client/tree/main/pkg/client) to python
+- [ ] replace pyoxidizer with pyinstaller: [thread](https://elastic.slack.com/archives/CTE3Q1MFG/p1717780247032599?thread_ts=1717776309.734889&cid=CTE3Q1MFG)
 - [ ] write tests
 - [ ] add autoformatting and linting
 - [ ] add CI
+- [ ] add NOTICE file
+- [ ] open source
 - [ ] record a demo
 - [ ] write a blog
