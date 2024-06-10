@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 import sys
-import time
+import asyncio
 
 from es_agent_client.util.logger import logger
+from es_agent_client.util.async_tools import run_loop
 from es_agent_client.client import VersionInfo, V2Options
 from es_agent_client.reader import new_v2_from_reader
+
 
 FAKE = "fake"
 
@@ -28,12 +30,7 @@ def run():
     )
     opts = V2Options()
     c = new_v2_from_reader(sys.stdin.buffer, ver, opts)
-    logger.info("Don't. Stop me. Nowwwww. Cause we're...")
-    while True:
-        logger.info("... having a good time")
-        time.sleep(10)
-
-    # TODO
+    run_loop(c)
 
 
 if __name__ == "__main__":

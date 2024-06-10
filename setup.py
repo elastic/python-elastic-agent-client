@@ -11,5 +11,6 @@ setup(
     install_requires=[
         'grpcio>=1.62',
         'protobuf>=4.25',
+        'uvloop>=0.17',
     ],
 )

@@ -217,7 +217,6 @@ def make_exe():
     for resource in exe.pip_download(["grpcio"]):
         resource.add_location = "filesystem-relative:py_lib"
         exe.add_python_resource(resource)
-    exe.add_python_resources(exe.pip_install(["protobuf"]))
     exe.add_python_resources(exe.pip_install([CWD]))
 
 

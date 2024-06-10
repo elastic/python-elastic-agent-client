@@ -30,6 +30,7 @@ def new_v2_from_reader(reader, ver, opts: V2Options):
         if s == ConnectionSupports.CheckinChunking:
             opts.chunking_allowed = True
 
+    logger.info("Setting up secure channel")
     channel_credentials = grpc.ssl_channel_credentials(info.ca_cert, info.peer_key, info.peer_cert)
     channel = grpc.secure_channel(info.addr, channel_credentials)
     client = V2()
