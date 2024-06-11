@@ -1,7 +1,6 @@
 from es_agent_client.generated.elastic_agent_client_pb2 import (
     StartUpInfo,
     AgentInfo,
-    ConnInfoServices,
     ConnectionSupports,
 )
 from es_agent_client.generated.elastic_agent_client_pb2_grpc import ElasticAgentStub
@@ -31,8 +30,17 @@ def new_v2_from_reader(reader, ver, opts: V2Options):
             opts.chunking_allowed = True
 
     logger.info("Setting up secure channel")
-    channel_credentials = grpc.ssl_channel_credentials(info.ca_cert, info.peer_key, info.peer_cert)
-    channel = grpc.secure_channel(info.addr, channel_credentials)
+
+    channel_credentials = grpc.ssl_channel_credentials(
+        root_certificates=info.ca_cert,
+        private_key=info.peer_key,
+        certificate_chain=info.peer_cert
+    )
+    channel = grpc.secure_channel(
+        info.addr,
+        channel_credentials,
+        options=[('grpc.ssl_target_name_override', info.server_name)]
+    )
     client = V2()
     client.target = info.addr
     client.opts = opts
@@ -44,7 +52,3 @@ def new_v2_from_reader(reader, ver, opts: V2Options):
     logger.info(f"Initialized V2 client: {client}")
 
     return client
-
-
-
-
