@@ -72,13 +72,7 @@ class V2:
         self.component_config: proto.Component = None
 
     def __str__(self):
-        return f"""
-        V2 Client
-          agent id: {self.agent_info.id}
-          agent version: {self.agent_info.version}
-          name: {self.version_info.name}
-          target: {self.target}
-        """
+        return f"V2 Client: (agent id: {self.agent_info.id}, agent version: {self.agent_info.version}, name: {self.version_info.name}, target: {self.target})"
 
     def sync_component(self, checkin: proto.CheckinExpected):
         pass # TODO
@@ -95,25 +89,27 @@ class CheckinV2Service(BaseService):
         self.client = client
 
     async def _run(self):
+        send_queue = queue.SimpleQueue()
+        checkin_stream = self.client.client.CheckinV2(iter(send_queue.get, None))
+
         while self.running:
-            send_queue = queue.SimpleQueue()
-            await sleep(0)
-            checkin_stream = self.client.client.CheckinV2(iter(send_queue.get, None))
-            current_checkin: proto.CheckinExpected = None
-            checkin: proto.CheckinExpected
-            for checkin in checkin_stream:
-                logger.info(f"received a checkin event from CheckinV2: {checkin}")
-                if current_checkin is None:
-                    current_checkin = checkin
-                elif checkin.units_timestamp != current_checkin.units_timestamp:
-                    current_checkin = checkin
-                if len(checkin.units) == 0:
-                    self.apply_expected(current_checkin)
-                    self.do_checkin(send_queue)
-                if current_checkin != checkin:
-                    current_checkin.units.extend(checkin.units)
-                logger.info("Waiting for a bit...")
-                await sleep(10)
+            self.do_checkin(send_queue)
+            await sleep(3)
+            # current_checkin: proto.CheckinExpected = None
+            # checkin: proto.CheckinExpected
+            # for checkin in checkin_stream:
+            #     logger.info(f"received a checkin event from CheckinV2: {checkin}")
+            #     if current_checkin is None:
+            #         current_checkin = checkin
+            #     elif checkin.units_timestamp != current_checkin.units_timestamp:
+            #         current_checkin = checkin
+            #     if len(checkin.units) == 0:
+            #         self.apply_expected(current_checkin)
+            #         self.do_checkin(send_queue)
+            #     if current_checkin != checkin:
+            #         current_checkin.units.extend(checkin.units)
+            #     logger.info("Waiting for a bit...")
+            #     await sleep(10)
 
     def apply_expected(self, checkin: proto.CheckinExpected):
         self.client.agent_info = proto.AgentInfo(id=checkin.agent_info.id, version=checkin.agent_info.version, snapshot=checkin.agent_info.snapshot)
@@ -123,15 +119,27 @@ class CheckinV2Service(BaseService):
     def do_checkin(self, send_queue):
         logger.info("Checking in....")
         units_observed = [unit.to_observed() for unit in self.client.units]
+
+        if not self.client.version_info_sent:
+            version_info = proto.CheckinObservedVersionInfo(
+                name=self.client.version_info.name,
+                meta=self.client.version_info.meta,
+                build_hash=self.client.version_info.build_hash
+            )
+            if self.client.opts.chunking_allowed:
+                supports = [proto.ConnectionSupports.CheckinChunking]
+            else:
+                supports = []
+
+        else:
+            version_info = None
+            supports = []
         msg = proto.CheckinObserved(
             token=self.client.token,
             units=units_observed,
-            version_info=None,
+            version_info=version_info,
             features_idx=self.client.features_idx,
             component_idx=self.client.component_idx,
+            supports=supports
         )
-        if not self.client.version_info_sent:
-            msg.version_info = self.client.version_info
-            if self.client.opts.chunking_allowed:
-                msg.supports = proto.ConnectionSupports(proto.CheckinChunking)
         send_queue.put(msg)

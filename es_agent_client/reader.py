@@ -47,6 +47,7 @@ def new_v2_from_reader(reader, ver, opts: V2Options):
     client.token = info.token
     client.agent_info = info.agent_info
     client.version_info = ver
+    client.units = []
     client.client = ElasticAgentStub(channel)
 
     logger.info(f"Initialized V2 client: {client}")
