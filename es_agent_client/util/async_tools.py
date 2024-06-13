@@ -1,8 +1,6 @@
 import asyncio
 from es_agent_client.util.logger import logger
 import time
-import signal
-import functools
 
 
 class CancellableSleeps:
@@ -61,29 +59,7 @@ def get_event_loop():
     return loop
 
 
-def run_loop(client):
-    loop = get_event_loop()
-    coro = _start_service(loop, client)
 
-    try:
-        return loop.run_until_complete(coro)
-    except asyncio.CancelledError:
-        return 0
-    finally:
-        logger.info("Bye")
-
-
-async def _start_service(loop, client):
-    multi_service = get_services(["checkinV2"], client)
-
-    def _shutdown(signal_name):
-        sleeps_for_retryable.cancel(signal_name)
-        multi_service.shutdown(signal_name)
-
-    for sig in (signal.SIGINT, signal.SIGTERM):
-        loop.add_signal_handler(sig, functools.partial(_shutdown, sig.name))
-
-    return await multi_service.run()
 
 
 def get_services(names, client):
@@ -99,18 +75,9 @@ def get_service(name, client):
     return _SERVICES[name](client)
 
 
-class _Registry(type):
-    """Metaclass used to register a service class in an internal registry."""
-
-    def __new__(cls, name, bases, dct):
-        service_name = dct.get("name")
-        class_instance = super().__new__(cls, name, bases, dct)
-        if service_name is not None:
-            _SERVICES[service_name] = class_instance
-        return class_instance
 
 
-class BaseService(metaclass=_Registry):
+class BaseService():
     """Base class for creating a service.
 
     Any class deriving from this class will get added to the registry,
@@ -145,6 +112,16 @@ class BaseService(metaclass=_Registry):
         finally:
             self.stop()
 
+    def _callback(self, task):
+        if task.cancelled():
+            logger.error(
+                f"Task {task.get_name()} was cancelled",
+            )
+        elif task.exception():
+            logger.error(
+                f"Exception found for task {task.get_name()}: {task.exception()}",
+            )
+
 
 class MultiService:
     """Wrapper class to run multiple services against the same client."""
@@ -154,7 +131,7 @@ class MultiService:
 
     async def run(self):
         """Runs every service in a task and wait for all tasks."""
-        tasks = [asyncio.create_task(service.run()) for service in self._services]
+        tasks = [asyncio.create_task(service.run(), name=service.name) for service in self._services]
 
         done, pending = await asyncio.wait(tasks, return_when=asyncio.FIRST_EXCEPTION)
 
