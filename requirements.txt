@@ -1,5 +1,5 @@
-grpcio==1.62.2
-grpcio-tools==1.62.2
-protobuf==4.25.3
+grpcio==1.64.1
+grpcio-tools==1.64.1
+protobuf==5.27.1
 pyoxidizer==0.24.0
 uvloop==0.17.0
