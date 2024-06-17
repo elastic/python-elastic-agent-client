@@ -8,7 +8,7 @@ from es_agent_client.generated.elastic_agent_client_pb2_grpc import ElasticAgent
 from es_agent_client.generated.elastic_agent_client_future_pb2_grpc import ElasticAgentStore, ElasticAgentArtifact, ElasticAgentLog
 
 from es_agent_client.util.logger import logger
-from es_agent_client.util.async_tools import BaseService
+from es_agent_client.util.async_tools import BaseService, AsyncQueueIterator
 from asyncio import sleep
 from google.protobuf.json_format import MessageToJson
 
@@ -97,7 +97,7 @@ class CheckinV2Service(BaseService):
     async def _run(self):
         logger.info("_run called on checkin service")
         send_queue = queue.SimpleQueue()
-        checkin_stream = self.client.client.CheckinV2(iter(send_queue.get, None))
+        checkin_stream = self.client.client.CheckinV2(AsyncQueueIterator(send_queue))
 
         send_checkins_task = asyncio.create_task(self.send_checkins(send_queue), name="Checkin Writer")
         receive_checkins_task = asyncio.create_task(self.receive_checkins(checkin_stream), name="Checkin Reader")
@@ -122,7 +122,7 @@ class CheckinV2Service(BaseService):
         current_checkin: proto.CheckinExpected = None
         checkin: proto.CheckinExpected
         logger.info("Listening for checkin events...")
-        for checkin in checkin_stream:
+        async for checkin in checkin_stream:
             checkin_str = json.dumps(json.loads(MessageToJson(checkin))) # TODO, this is super inefficient and should be removed
             logger.info(f"received a checkin event from CheckinV2: {checkin_str}")
             if current_checkin is None:

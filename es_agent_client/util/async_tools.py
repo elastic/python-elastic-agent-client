@@ -161,3 +161,18 @@ class MultiService:
             logger.debug(f"Shutting down {service.__class__.__name__}...")
             service.stop()
             logger.debug(f"Done shutting down {service.__class__.__name__}...")
+
+
+class AsyncQueueIterator:
+
+    def __init__(self, queue):
+        self.queue = queue
+
+    def __aiter__(self):
+        return self
+
+    async def __anext__(self):
+        while self.queue.empty():
+            await asyncio.sleep(1) # TODO this seems wrong
+
+        return self.queue.get()
