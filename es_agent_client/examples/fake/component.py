@@ -4,12 +4,12 @@ import asyncio
 import signal
 import functools
 
-import grpc.aio
 
 from es_agent_client.util.logger import logger
-from es_agent_client.client import VersionInfo, V2Options, CheckinV2Service
+from es_agent_client.client import VersionInfo, V2Options
+from es_agent_client.service.checkin import CheckinV2Service
 from es_agent_client.reader import new_v2_from_reader
-from es_agent_client.util.async_tools import get_event_loop, get_services, sleeps_for_retryable, MultiService
+from es_agent_client.util.async_tools import get_event_loop, sleeps_for_retryable, MultiService
 
 FAKE = "fake"
 
