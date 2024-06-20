@@ -164,7 +164,6 @@ class MultiService:
 
 
 class AsyncQueueIterator:
-
     def __init__(self, queue):
         self.queue = queue
 
@@ -172,7 +171,9 @@ class AsyncQueueIterator:
         return self
 
     async def __anext__(self):
-        while self.queue.empty():
-            await asyncio.sleep(1) # TODO this seems wrong
-
-        return self.queue.get()
+        try:
+            item = await self.queue.get()
+        except asyncio.QueueShutDown:
+            raise StopAsyncIteration
+        else:
+            return item

@@ -96,7 +96,7 @@ class CheckinV2Service(BaseService):
 
     async def _run(self):
         logger.info("_run called on checkin service")
-        send_queue = queue.SimpleQueue()
+        send_queue = asyncio.Queue()
         checkin_stream = self.client.client.CheckinV2(AsyncQueueIterator(send_queue))
 
         send_checkins_task = asyncio.create_task(self.send_checkins(send_queue), name="Checkin Writer")
@@ -115,7 +115,8 @@ class CheckinV2Service(BaseService):
     async def send_checkins(self, send_queue):
         logger.info("Inside send_checkins()")
         while self.running:
-            self.do_checkin(send_queue)
+            if send_queue.empty():
+                await self.do_checkin(send_queue)
             await sleep(self.CHECKIN_INTERVAL)
 
     async def receive_checkins(self, checkin_stream):
@@ -144,7 +145,7 @@ class CheckinV2Service(BaseService):
         self.client.sync_component(checkin)
         self.client.sync_units(checkin)
 
-    def do_checkin(self, send_queue):
+    async def do_checkin(self, send_queue):
         logger.info("Checking in....")
         units_observed = [unit.to_observed() for unit in self.client.units]
 
@@ -170,4 +171,4 @@ class CheckinV2Service(BaseService):
             component_idx=self.client.component_idx,
             supports=supports
         )
-        send_queue.put(msg)
+        await send_queue.put(msg)
