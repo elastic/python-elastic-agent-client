@@ -8,6 +8,7 @@ import functools
 from es_agent_client.util.logger import logger
 from es_agent_client.client import VersionInfo, V2Options
 from es_agent_client.service.checkin import CheckinV2Service
+from es_agent_client.service.actions import ActionsService
 from es_agent_client.reader import new_v2_from_reader
 from es_agent_client.util.async_tools import get_event_loop, sleeps_for_retryable, MultiService
 
@@ -49,7 +50,7 @@ def run_loop(buffer, ver, opts):
 
 async def _start_service(loop, buffer, ver, opts):
     client = new_v2_from_reader(buffer, ver, opts)
-    multi_service = MultiService(CheckinV2Service(client),)
+    multi_service = MultiService(CheckinV2Service(client), ActionsService(client, handle_action))
 
     def _shutdown(signal_name):
         sleeps_for_retryable.cancel(signal_name)
@@ -59,6 +60,11 @@ async def _start_service(loop, buffer, ver, opts):
         loop.add_signal_handler(sig, functools.partial(_shutdown, sig.name))
 
     return await multi_service.run()
+
+
+def handle_action(action):
+    raise NotImplementedError(f"This fake component can't handle action requests. Received: {action}")
+
 
 if __name__ == "__main__":
     sys.exit(main())
