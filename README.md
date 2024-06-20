@@ -6,11 +6,60 @@ This is a python implementation, and is a technical preview.
 
 ### Using an example
 
-1. compile `es_agent_client/examples/fake/component.py` with `make exe`
-2. drop the compiled executable (`build/**/debug/install/py*`) and a corresponding spec file into an agent's `data/elastic-agent-*/components/` dir
-3. modify the agent's `elastic-agent.yml` policy to specify the fake component as an input
-4. start agent (`sudo ./elastic-agent`)
-5. see that the python agent runs (`sudo tail -f data/elastic-agent-*/log/*.log`)
+Agent needs a binary to run.
+A simple executable shell script will do.
+
+```shell
+#!/bin/bash
+PYTHON_PATH=/path/to/bin/python
+PY_AGENT_CLIENT_PATH=/path/to/python-elastic-agent-client
+$PYTHON_PATH $PY_AGENT_CLIENT_PATH/es_agent_client/examples/fake/component.py
+```
+
+Put those contents in a `elastic-agent*/data/elastic-agent*/components/python-elastic-agent-client` file, and
+```shell
+chmod 755 elastic-agent*/data/elastic-agent*/components/python-elastic-agent-client
+```
+
+You'll also need to create a specfile at `elastic-agent*/data/elastic-agent*/components/python-elastic-agent-client.spec.yml`
+with the contents:
+```yaml
+version: 2
+inputs:
+  - name: fake-py
+    description: "Fake Py component input"
+    platforms: &platforms
+      - linux/amd64
+      - linux/arm64
+      - darwin/amd64
+      - darwin/arm64
+      - windows/amd64
+      - container/amd64
+      - container/arm64
+    outputs: &outputs
+      - elasticsearch
+    shippers: &shippers
+      - shipper
+    command: &command
+      restart_monitoring_period: 5s
+      maximum_restarts_per_period: 1
+      timeouts:
+        restart: 1s
+      args: []
+```
+
+Then use this input in your `elastic-agent.yml` with:
+```
+inputs:
+  - type: fake-py
+    id: fake-py
+    use_output: default
+```
+
+You can easily tail the logs by running:
+```
+sudo ./elastic-agent 2>&1 >/dev/null  | jq '.message'
+```
 
 ### Developing
 
@@ -33,15 +82,7 @@ Instead, when `make generate` runs, it will:
 3. store that generated code in `es_agent_client/generated`
 4. post-process them a bit (grpc_tools generates python2 imports, instead of python3 🤷)
 
-###### PyOxidizer
 
-Agent needs a binary that it can execute. 
-A tool called [PyOxidizer](https://gregoryszorc.com/docs/pyoxidizer/main/pyoxidizer_overview.html) helps us accomplish this, by compiling an entire python distribution (including our source code and dependencies) into a single executable.
-In our case, it also produces a `py_lib/` dir that must live next to that binary, which contains c extensions that can't be memoized.
-These must be copied into the Agent artifact manually for now.
-Eventually, these will be included in Agent's automated builds.
-
-The binary is produced with `make exe`, and is controlled via the `pyoxidizer.bzl` configuration file.
 
 ### TODO List
 - [ ] Translate the [Go fake component](https://github.com/elastic/elastic-agent/blob/main/pkg/component/fake/component/main.go) to python
