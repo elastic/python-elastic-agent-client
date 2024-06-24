@@ -18,7 +18,7 @@ generate: bin/python dev
 install: bin/python
 	bin/pip install -e .
 
-lint: bin/python bin/black bin/pyright
+lint: dev
 	bin/ruff es_agent_client
 	bin/pyright es_agent_client
 	bin/ruff tests
