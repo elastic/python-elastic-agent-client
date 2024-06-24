@@ -1,14 +1,13 @@
 import asyncio
-import functools
 import json
 
-import es_agent_client.generated.elastic_agent_client_pb2 as proto
-
-from es_agent_client.util.async_tools import AsyncQueueIterator, BaseService
-from es_agent_client.handler.action import BaseActionHandler
-from es_agent_client.client import V2
-from es_agent_client.util.logger import logger
 from google.protobuf.json_format import MessageToJson
+
+import es_agent_client.generated.elastic_agent_client_pb2 as proto
+from es_agent_client.client import V2
+from es_agent_client.handler.action import BaseActionHandler
+from es_agent_client.util.async_tools import AsyncQueueIterator, BaseService
+from es_agent_client.util.logger import logger
 
 
 class ActionsService(BaseService):
@@ -24,32 +23,37 @@ class ActionsService(BaseService):
         send_queue = asyncio.Queue()
         action_stream = self.client.client.Actions(AsyncQueueIterator(send_queue))
         logger.info("Sending startup action event")
-        await send_queue.put(proto.ActionResponse(
-            token=self.client.token,
-            id="init",
-            status=proto.ActionResponse.SUCCESS,
-            result=self.init_action_result()
-        ))
+        await send_queue.put(
+            proto.ActionResponse(
+                token=self.client.token,
+                id="init",
+                status=proto.ActionResponse.SUCCESS,
+                result=self.init_action_result(),
+            )
+        )
 
         logger.info("Listening for action events...")
         action: proto.ActionRequest
         async for action in action_stream:
-            action_str = json.dumps(json.loads(MessageToJson(action))) # TODO, this is super inefficient and should be removed
+            action_str = json.dumps(
+                json.loads(MessageToJson(action))
+            )  # TODO, this is super inefficient and should be removed
             logger.info(f"received a action event from actionV2: {action_str}")
             try:
                 await self.action_handler.handle_action(action)
             except Exception as e:
                 logger.exception(f"Failed to do action: {action}", e)
-                await send_queue.put(proto.ActionResponse(
-                    token=self.client.token,
-                    id=action.id,
-                    status=proto.ActionResponse.FAILED,
-                    result=self.generic_action_failure()
-                ))
+                await send_queue.put(
+                    proto.ActionResponse(
+                        token=self.client.token,
+                        id=action.id,
+                        status=proto.ActionResponse.FAILED,
+                        result=self.generic_action_failure(),
+                    )
+                )
 
     def init_action_result(self):
         return json.dumps({}).encode()
 
     def generic_action_failure(self):
         return json.dumps({"error": "Action failed"}).encode()
-

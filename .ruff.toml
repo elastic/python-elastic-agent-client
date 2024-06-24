@@ -1,0 +1,21 @@
+select = ["A", "ASYNC", "I", "E", "F", "B", "C4", "T10", "T20", "EM", "ISC", "S"]
+ignore = ["E501"]
+# Allow autofix for all enabled rules (when `--fix`) is provided.
+fixable = ["ALL"]
+unfixable = []
+exclude = [
+    ".git",
+    "__pycache__",
+    "lib",
+    "bin",
+    "include",
+    "generated"
+]
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+target-version = "py310"
+
+[isort]
+known-first-party=["es_agent_client"]
+
+[per-file-ignores]
+"tests/*" = ["B017", "S101", "S"]

@@ -62,8 +62,18 @@ class ColorFormatter(logging.Formatter):
 
 
 class ExtraLogger(logging.Logger):
-    def _log(self, level, msg, args, exc_info=None, prefix=None, extra=None):
-        if (prefix):
+    def _log(
+        self,
+        level,
+        msg,
+        args,
+        exc_info=None,
+        extra=None,
+        stack_info=None,
+        stacklevel=None,
+        prefix=None,
+    ):
+        if prefix:
             msg = f"{prefix} {msg}"
 
         if extra is None:

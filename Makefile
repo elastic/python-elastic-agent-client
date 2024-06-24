@@ -1,6 +1,8 @@
 .PHONY: install
 
 PYTHON=python3.10
+COVERAGE_THRESHOLD=0 # percents
+SLOW_TEST_THRESHOLD=1 # seconds
 
 bin/python:
 	$(PYTHON) -m venv .
@@ -15,6 +17,21 @@ generate: bin/python dev
 
 install: bin/python
 	bin/pip install -e .
+
+lint: bin/python bin/black bin/pyright
+	bin/ruff es_agent_client
+	bin/pyright es_agent_client
+	bin/ruff tests
+	bin/pyright tests
+
+autoformat: dev
+	bin/black es_agent_client --exclude generated
+	bin/black tests
+	bin/ruff es_agent_client --fix
+	bin/ruff tests --fix
+
+test: dev
+	bin/pytest --cov-report term-missing --cov-fail-under $(COVERAGE_THRESHOLD) --cov-report html --cov=es_agent_client --fail-slow=$(SLOW_TEST_THRESHOLD) -sv tests
 
 clean:
 	rm -rf bin lib include .proto

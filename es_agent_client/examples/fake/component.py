@@ -1,27 +1,33 @@
 #!/usr/bin/env python3
-import sys
 import asyncio
-import signal
 import functools
+import signal
+import sys
 
+from elasticsearch import AsyncElasticsearch
 
-from es_agent_client.util.logger import logger
+from es_agent_client.client import V2, V2Options, VersionInfo
+from es_agent_client.generated import elastic_agent_client_pb2 as proto
 from es_agent_client.handler.action import BaseActionHandler
 from es_agent_client.handler.checkin import BaseCheckinHandler
-from es_agent_client.client import VersionInfo, V2Options, V2
-from es_agent_client.service.checkin import CheckinV2Service
-from es_agent_client.service.actions import ActionsService
 from es_agent_client.reader import new_v2_from_reader
-from es_agent_client.util.async_tools import get_event_loop, sleeps_for_retryable, MultiService, BaseService
-from es_agent_client.generated import elastic_agent_client_pb2 as proto
-from elasticsearch import AsyncElasticsearch
+from es_agent_client.service.actions import ActionsService
+from es_agent_client.service.checkin import CheckinV2Service
+from es_agent_client.util.async_tools import (
+    BaseService,
+    MultiService,
+    get_event_loop,
+    sleeps_for_retryable,
+)
+from es_agent_client.util.logger import logger
 
 FAKE = "fake"
 
 
 class FakeActionHandler(BaseActionHandler):
     async def handle_action(self, action: proto.ActionRequest):
-        raise NotImplementedError(f"This fake component can't handle action requests. Received: {action}")
+        msg = f"This fake component can't handle action requests. Received: {action}"
+        raise NotImplementedError(msg)
 
 
 class FakeOutputService(BaseService):
@@ -39,7 +45,8 @@ class FakeOutputService(BaseService):
             await asyncio.sleep(5)
 
         await self.es_client.perform_request(
-            "PUT", "/test-fake/_doc/1",
+            "PUT",
+            "/test-fake/_doc/1",
             headers={"accept": "application/json", "Content-Type": "application/json"},
             body={"message": "Hello, Fake World!"},
         )
@@ -60,7 +67,6 @@ class FakeOutputService(BaseService):
 
 
 class FakeCheckinHandler(BaseCheckinHandler):
-
     def __init__(self, client: V2, output_service: FakeOutputService):
         super().__init__(client)
         self.output_service = output_service
@@ -68,12 +74,22 @@ class FakeCheckinHandler(BaseCheckinHandler):
     async def apply_from_client(self):
         logger.info("There's new information for the components/units!")
         if self.client.units:
-            outputs = [unit for unit in self.client.units if unit.unit_type == proto.UnitType.OUTPUT]
+            outputs = [
+                unit
+                for unit in self.client.units
+                if unit.unit_type == proto.UnitType.OUTPUT
+            ]
             if len(outputs) > 0:
                 source = outputs[0].config.source
-                if source.fields.get('hosts') and source.fields.get('username') and source.fields.get('password'):
+                if (
+                    source.fields.get("hosts")
+                    and source.fields.get("username")
+                    and source.fields.get("password")
+                ):
                     logger.info("instantiating ES client")
-                    self.output_service.create_es_client(source['hosts'], source["username"], source['password'])
+                    self.output_service.create_es_client(
+                        source["hosts"], source["username"], source["password"]
+                    )
 
 
 def main():
@@ -87,12 +103,7 @@ def main():
 
 
 def run():
-    ver = VersionInfo(
-        name=FAKE,
-        meta={
-            "input": FAKE
-        }
-    )
+    ver = VersionInfo(name=FAKE, meta={"input": FAKE})
     opts = V2Options()
     run_loop(sys.stdin.buffer, ver, opts)
 
@@ -117,7 +128,7 @@ async def _start_service(loop, buffer, ver, opts):
     multi_service = MultiService(
         CheckinV2Service(client, checkin_handler),
         ActionsService(client, action_handler),
-        output_service
+        output_service,
     )
 
     def _shutdown(signal_name):
@@ -128,7 +139,6 @@ async def _start_service(loop, buffer, ver, opts):
         loop.add_signal_handler(sig, functools.partial(_shutdown, sig.name))
 
     return await multi_service.run()
-
 
 
 if __name__ == "__main__":

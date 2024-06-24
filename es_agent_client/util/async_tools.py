@@ -1,6 +1,7 @@
 import asyncio
-from es_agent_client.util.logger import logger
 import time
+
+from es_agent_client.util.logger import logger
 
 
 class CancellableSleeps:
@@ -38,16 +39,13 @@ _SERVICES = {}
 
 
 def get_event_loop():
-
     # activate uvloop if lib is present
     try:
         import uvloop
 
         asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
     except Exception as e:
-        logger.warning(
-            f"Unable to enable uvloop: {e}. Running with default event loop"
-        )
+        logger.warning(f"Unable to enable uvloop: {e}. Running with default event loop")
         pass
     try:
         loop = asyncio.get_running_loop()
@@ -57,9 +55,6 @@ def get_event_loop():
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
     return loop
-
-
-
 
 
 def get_services(names, client):
@@ -75,9 +70,7 @@ def get_service(name, client):
     return _SERVICES[name](client)
 
 
-
-
-class BaseService():
+class BaseService:
     """Base class for creating a service.
 
     Any class deriving from this class will get added to the registry,
@@ -119,7 +112,8 @@ class BaseService():
             )
         elif task.exception():
             logger.exception(
-                f"Exception found for task {task.get_name()}: {task.exception()}", exc_info=task.exception()
+                f"Exception found for task {task.get_name()}: {task.exception()}",
+                exc_info=task.exception(),
             )
 
 
@@ -131,7 +125,10 @@ class MultiService:
 
     async def run(self):
         """Runs every service in a task and wait for all tasks."""
-        tasks = [asyncio.create_task(service.run(), name=service.name) for service in self._services]
+        tasks = [
+            asyncio.create_task(service.run(), name=service.name)
+            for service in self._services
+        ]
 
         done, pending = await asyncio.wait(tasks, return_when=asyncio.FIRST_EXCEPTION)
 
@@ -141,7 +138,7 @@ class MultiService:
                 if task.exception():
                     logger.exception(
                         f"Exception found for task {task.get_name()}: {task.exception()}",
-                        exc_info=task.exception()
+                        exc_info=task.exception(),
                     )
                     exception = task.exception()
 
@@ -174,7 +171,7 @@ class AsyncQueueIterator:
     async def __anext__(self):
         try:
             item = await self.queue.get()
-        except asyncio.QueueShutDown:
-            raise StopAsyncIteration
+        except Exception as e:
+            raise StopAsyncIteration() from e
         else:
             return item
