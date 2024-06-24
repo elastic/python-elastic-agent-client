@@ -53,13 +53,28 @@ class CheckinV2Service(BaseService):
         logger.info("Listening for checkin events...")
         async for checkin in checkin_stream:
             logger.info("Received a checkin event from CheckinV2")
-            logger.info(
-                f"ExpectedCheckin is: {json.dumps(json.loads(MessageToJson(checkin)))}"
-            )
             await self.apply_expected(checkin)
             await sleep(0)
 
     async def apply_expected(self, checkin: proto.CheckinExpected):
+        if self.client.units and self.client.component_idx == checkin.component_idx:
+            change_detected = False
+            expected_units = [(unit.id, unit.config_state_idx) for unit in checkin.units]
+            current_units = [(unit.id, unit.config_idx) for unit in self.client.units]
+            for current_unit in current_units:
+                if current_unit not in expected_units:
+                    change_detected = True
+                    break
+
+            for expected_unit in expected_units:
+                if expected_unit not in current_units:
+                    change_detected = True
+                    break
+
+            if not change_detected:
+                logger.info("no change detected")
+                return
+
         logger.info("applying CheckinExpected")
         self.client.agent_info = proto.AgentInfo(
             id=checkin.agent_info.id,
