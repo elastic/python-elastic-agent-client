@@ -118,8 +118,8 @@ class BaseService():
                 f"Task {task.get_name()} was cancelled",
             )
         elif task.exception():
-            logger.error(
-                f"Exception found for task {task.get_name()}: {task.exception()}",
+            logger.exception(
+                f"Exception found for task {task.get_name()}: {task.exception()}", exc_info=task.exception()
             )
 
 
@@ -139,8 +139,9 @@ class MultiService:
         for task in done:
             if task.done() and not task.cancelled():
                 if task.exception():
-                    logger.error(
+                    logger.exception(
                         f"Exception found for task {task.get_name()}: {task.exception()}",
+                        exc_info=task.exception()
                     )
                     exception = task.exception()
 

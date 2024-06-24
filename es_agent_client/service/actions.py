@@ -5,6 +5,7 @@ import json
 import es_agent_client.generated.elastic_agent_client_pb2 as proto
 
 from es_agent_client.util.async_tools import AsyncQueueIterator, BaseService
+from es_agent_client.handler.action import BaseActionHandler
 from es_agent_client.client import V2
 from es_agent_client.util.logger import logger
 from google.protobuf.json_format import MessageToJson
@@ -13,7 +14,7 @@ from google.protobuf.json_format import MessageToJson
 class ActionsService(BaseService):
     name = "actions"
 
-    def __init__(self, client: V2, action_handler):
+    def __init__(self, client: V2, action_handler: BaseActionHandler):
         super().__init__(client, "actions")
         logger.info("Initializing the actions service")
         self.client = client
@@ -36,7 +37,7 @@ class ActionsService(BaseService):
             action_str = json.dumps(json.loads(MessageToJson(action))) # TODO, this is super inefficient and should be removed
             logger.info(f"received a action event from actionV2: {action_str}")
             try:
-                functools.partial(self.action_handler, action)()
+                await self.action_handler.handle_action(action)
             except Exception as e:
                 logger.exception(f"Failed to do action: {action}", e)
                 await send_queue.put(proto.ActionResponse(

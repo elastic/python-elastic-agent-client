@@ -4,6 +4,7 @@ import json
 
 import es_agent_client.generated.elastic_agent_client_pb2 as proto
 from es_agent_client.util.async_tools import AsyncQueueIterator, BaseService
+from es_agent_client.handler.checkin import BaseCheckinHandler
 from es_agent_client.client import V2
 from es_agent_client.util.logger import logger
 from asyncio import sleep
@@ -14,10 +15,11 @@ class CheckinV2Service(BaseService):
     name = "checkinV2"
     CHECKIN_INTERVAL = 5
 
-    def __init__(self, client: V2):
+    def __init__(self, client: V2, checkin_handler: BaseCheckinHandler):
         super().__init__(client, "checkinV2")
         logger.info("Initializing the checkin service")
         self.client = client
+        self.checkin_handler = checkin_handler
 
     async def _run(self):
         send_queue = asyncio.Queue()
@@ -42,22 +44,16 @@ class CheckinV2Service(BaseService):
             await sleep(self.CHECKIN_INTERVAL)
 
     async def receive_checkins(self, checkin_stream):
-        current_checkin: proto.CheckinExpected = None
         checkin: proto.CheckinExpected
         logger.info("Listening for checkin events...")
         async for checkin in checkin_stream:
             logger.info("Received a checkin event from CheckinV2")
-            if current_checkin is None:
-                current_checkin = checkin
-            elif checkin.units_timestamp != current_checkin.units_timestamp:
-                current_checkin = checkin
-            if len(checkin.units) == 0:
-                self.apply_expected(current_checkin)
-            if current_checkin != checkin:
-                current_checkin.units.extend(checkin.units)
-            await sleep(self.CHECKIN_INTERVAL)
+            logger.info(f"ExpectedCheckin is: {json.dumps(json.loads(MessageToJson(checkin)))}")
+            await self.apply_expected(checkin)
+            await sleep(0)
 
-    def apply_expected(self, checkin: proto.CheckinExpected):
+    async def apply_expected(self, checkin: proto.CheckinExpected):
+        logger.info("applying CheckinExpected")
         self.client.agent_info = proto.AgentInfo(
             id=checkin.agent_info.id,
             version=checkin.agent_info.version,
@@ -65,6 +61,7 @@ class CheckinV2Service(BaseService):
         )
         self.client.sync_component(checkin)
         self.client.sync_units(checkin)
+        await self.checkin_handler.apply_from_client()
 
     async def do_checkin(self, send_queue):
         logger.info("Checking in....")

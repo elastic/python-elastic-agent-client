@@ -87,7 +87,9 @@ Instead, when `make generate` runs, it will:
 ### TODO List
 - [ ] Translate the [Go fake component](https://github.com/elastic/elastic-agent/blob/main/pkg/component/fake/component/main.go) to python
   - [ ] Translate the necessary [Go client helpers](https://github.com/elastic/elastic-agent-client/tree/main/pkg/client) to python
+  - [ ] capture diagnostic metrics. See [suggested metrics](https://docs.google.com/document/d/1NaaoweevnylnGAPXzuwvwuFcC7dYSIDNUoBkf2SCR5I/edit#heading=h.gf5gk6n81441)
 - [ ] introduce pyinstaller? [thread](https://elastic.slack.com/archives/CTE3Q1MFG/p1717780247032599?thread_ts=1717776309.734889&cid=CTE3Q1MFG)
+- [ ] actually signal "changes" vs checkins
 - [ ] remove all inline TODOs
 - [ ] write tests
 - [ ] add autoformatting and linting
@@ -97,3 +99,5 @@ Instead, when `make generate` runs, it will:
 - [ ] open source
 - [ ] record a demo
 - [ ] write a blog
+- [ ] one day...
+  - [ ] support "custom actions" to trigger a sync, test connection, etc

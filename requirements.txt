@@ -2,3 +2,4 @@ grpcio==1.64.1
 grpcio-tools==1.64.1
 protobuf==5.27.1
 uvloop==0.17.0
+elasticsearch[async]==8.14.0
