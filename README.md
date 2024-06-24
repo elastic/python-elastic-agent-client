@@ -96,5 +96,4 @@ Instead, when `make generate` runs, it will:
 - [ ] one day...
   - [ ] support "custom actions" to trigger a sync, test connection, etc
   - [ ] capture diagnostic metrics. See [suggested metrics](https://docs.google.com/document/d/1NaaoweevnylnGAPXzuwvwuFcC7dYSIDNUoBkf2SCR5I/edit#heading=h.gf5gk6n81441)
-  - [ ] actually signal "changes" vs checkins
 

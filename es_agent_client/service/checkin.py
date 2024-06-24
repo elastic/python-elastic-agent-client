@@ -1,9 +1,6 @@
 import asyncio
 import functools
-import json
 from asyncio import sleep
-
-from google.protobuf.json_format import MessageToJson
 
 import es_agent_client.generated.elastic_agent_client_pb2 as proto
 from es_agent_client.client import V2
@@ -59,7 +56,9 @@ class CheckinV2Service(BaseService):
     async def apply_expected(self, checkin: proto.CheckinExpected):
         if self.client.units and self.client.component_idx == checkin.component_idx:
             change_detected = False
-            expected_units = [(unit.id, unit.config_state_idx) for unit in checkin.units]
+            expected_units = [
+                (unit.id, unit.config_state_idx) for unit in checkin.units
+            ]
             current_units = [(unit.id, unit.config_idx) for unit in self.client.units]
             for current_unit in current_units:
                 if current_unit not in expected_units:
