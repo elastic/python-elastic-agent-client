@@ -9,7 +9,7 @@ Logger -- sets the logging and provides a `logger` global object.
 import logging
 from functools import cached_property
 
-logger = None
+logger: logging.Logger
 
 
 class ColorFormatter(logging.Formatter):

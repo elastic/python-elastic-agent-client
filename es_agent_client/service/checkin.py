@@ -20,7 +20,10 @@ class CheckinV2Service(BaseService):
         self.checkin_handler = checkin_handler
 
     async def _run(self):
-        send_queue = asyncio.Queue()
+        if self.client.client is None:
+            msg = "gRPC client is not yet set"
+            raise RuntimeError(msg)
+        send_queue: asyncio.Queue = asyncio.Queue()
         checkin_stream = self.client.client.CheckinV2(AsyncQueueIterator(send_queue))
 
         send_checkins_task = asyncio.create_task(
@@ -90,20 +93,15 @@ class CheckinV2Service(BaseService):
         logger.info("Checking in....")
         units_observed = [unit.to_observed() for unit in self.client.units]
 
-        if not self.client.version_info_sent:
+        if not self.client.version_info_sent and self.client.version_info:
             version_info = proto.CheckinObservedVersionInfo(
                 name=self.client.version_info.name,
                 meta=self.client.version_info.meta,
                 build_hash=self.client.version_info.build_hash,
             )
-            if self.client.opts.chunking_allowed:
-                supports = [proto.ConnectionSupports.CheckinChunking]
-            else:
-                supports = []
-
         else:
             version_info = None
-            supports = []
+        supports: list[str] = []
         msg = proto.CheckinObserved(
             token=self.client.token,
             units=units_observed,
@@ -113,3 +111,4 @@ class CheckinV2Service(BaseService):
             supports=supports,
         )
         await send_queue.put(msg)
+        self.client.version_info_sent = True

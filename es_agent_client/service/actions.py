@@ -20,7 +20,10 @@ class ActionsService(BaseService):
         self.action_handler = action_handler
 
     async def _run(self):
-        send_queue = asyncio.Queue()
+        if self.client.client is None:
+            msg = "gRPC client is not yet set"
+            raise RuntimeError(msg)
+        send_queue: asyncio.Queue = asyncio.Queue()
         action_stream = self.client.client.Actions(AsyncQueueIterator(send_queue))
         logger.info("Sending startup action event")
         await send_queue.put(

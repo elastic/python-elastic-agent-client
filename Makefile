@@ -19,6 +19,7 @@ install: bin/python
 	bin/pip install -e .
 
 lint: dev
+	bin/mypy -p es_agent_client
 	bin/ruff es_agent_client
 	bin/pyright es_agent_client
 	bin/ruff tests

@@ -36,7 +36,7 @@ class FakeOutputService(BaseService):
     def __init__(self, agent_client: V2):
         super().__init__(agent_client, self.name)
         self.agent_client: V2 = agent_client
-        self.es_client: AsyncElasticsearch = None
+        self.es_client: AsyncElasticsearch
 
     async def _run(self):
         await asyncio.sleep(0)
@@ -79,7 +79,7 @@ class FakeCheckinHandler(BaseCheckinHandler):
                 for unit in self.client.units
                 if unit.unit_type == proto.UnitType.OUTPUT
             ]
-            if len(outputs) > 0:
+            if len(outputs) > 0 and outputs[0].config:
                 source = outputs[0].config.source
                 if (
                     source.fields.get("hosts")

@@ -1,3 +1,5 @@
+from typing import Optional
+
 import es_agent_client.generated.elastic_agent_client_pb2 as proto
 from es_agent_client.generated.elastic_agent_client_future_pb2_grpc import (
     ElasticAgentArtifact,
@@ -8,7 +10,9 @@ from es_agent_client.generated.elastic_agent_client_pb2_grpc import ElasticAgent
 
 
 class VersionInfo:
-    def __init__(self, name, meta, build_hash=None):
+    def __init__(
+        self, name: str, meta: Optional[dict], build_hash: Optional[str] = None
+    ):
         self.name = name
         self.meta = meta
         self.build_hash = build_hash
@@ -17,9 +21,9 @@ class VersionInfo:
 class V2Options:
     def __init__(
         self,
-        max_message_size=None,
-        chunking_allowed=None,
-        agent_info: proto.AgentInfo | None = None,
+        max_message_size: Optional[int] = None,
+        chunking_allowed: Optional[bool] = None,
+        agent_info: Optional[proto.AgentInfo] = None,
     ):
         self.max_message_size = max_message_size
         self.chunking_allowed = chunking_allowed
@@ -29,21 +33,21 @@ class V2Options:
 
 class Unit:
     def __init__(self):
-        self.id: str | None = None
-        self.unit_type: proto.UnitType | None = None
-        self.expected_state: proto.State | None = None
-        self.log_level: proto.UnitLogLevel | None = None
-        self.config: proto.UnitExpectedConfig | None = None
-        self.config_idx: int | None = None
-        self.features: proto.Features | None = None
-        self.features_idx: int | None = None
-        self.apm: proto.APMConfig | None = None
-        self.state: proto.State | None = None
-        self.state_msg: str | None = None
-        self.state_payload: dict | None = None
-        self.actions: dict | None = None
-        self.client: V2 | None = None
-        self.diag_hooks: dict | None = None
+        self.id: Optional[str] = None
+        self.unit_type: Optional[proto.UnitType] = None
+        self.expected_state: Optional[proto.State] = None
+        self.log_level: Optional[proto.UnitLogLevel] = None
+        self.config: Optional[proto.UnitExpectedConfig] = None
+        self.config_idx: Optional[int] = None
+        self.features: Optional[proto.Features] = None
+        self.features_idx: Optional[int] = None
+        self.apm: Optional[proto.APMConfig] = None
+        self.state: Optional[proto.State] = None
+        self.state_msg: Optional[str] = None
+        self.state_payload: Optional[dict] = None
+        self.actions: Optional[dict] = None
+        self.client: Optional[V2] = None
+        self.diag_hooks: Optional[dict] = None
 
     def to_observed(self) -> proto.UnitObserved:
         return proto.UnitObserved(
@@ -58,24 +62,27 @@ class Unit:
 
 class V2:
     def __init__(self):
-        self.target: str | None = None
-        self.opts: V2Options | None = None
-        self.token: str | None = None
-        self.agent_info: proto.AgentInfo | None = None
-        self.version_info: VersionInfo | None = None
-        self.version_info_sent: bool | None = None
-        self.client: ElasticAgentStub | None = None
-        self.store_client: ElasticAgentStore | None = None
-        self.artifact_client: ElasticAgentArtifact | None = None
-        self.log_client: ElasticAgentLog | None = None
-        self.units: list[Unit] | None = None
-        self.features_idx: int | None = None
-        self.component_idx: int | None = None
-        self.component_config: proto.Component | None = None
-        self.apm_config: proto.APMConfig | None = None
+        self.target: Optional[str] = None
+        self.opts: Optional[V2Options] = None
+        self.token: Optional[str] = None
+        self.agent_info: Optional[proto.AgentInfo] = None
+        self.version_info: Optional[VersionInfo] = None
+        self.version_info_sent: Optional[bool] = None
+        self.client: Optional[ElasticAgentStub] = None
+        self.store_client: Optional[ElasticAgentStore] = None
+        self.artifact_client: Optional[ElasticAgentArtifact] = None
+        self.log_client: Optional[ElasticAgentLog] = None
+        self.units: Optional[list[Unit]] = None
+        self.features_idx: Optional[int] = None
+        self.component_idx: Optional[int] = None
+        self.component_config: Optional[proto.Component] = None
+        self.apm_config: Optional[proto.APMConfig] = None
 
     def __str__(self):
-        return f"V2 Client: (agent id: {self.agent_info.id}, agent version: {self.agent_info.version}, name: {self.version_info.name}, target: {self.target})"
+        if self.agent_info and self.version_info:
+            return f"V2 Client: (agent id: {self.agent_info.id}, agent version: {self.agent_info.version}, name: {self.version_info.name}, target: {self.target})"
+        else:
+            return "Uninitialized V2 Client"
 
     def sync_component(self, checkin: proto.CheckinExpected):
         self.component_config = checkin.component

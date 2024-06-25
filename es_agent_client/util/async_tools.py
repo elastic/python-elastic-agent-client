@@ -35,8 +35,6 @@ class CancellableSleeps:
 
 sleeps_for_retryable = CancellableSleeps()
 
-_SERVICES = {}
-
 
 def get_event_loop():
     # activate uvloop if lib is present
@@ -57,19 +55,6 @@ def get_event_loop():
     return loop
 
 
-def get_services(names, client):
-    """Instantiates a list of services given their names and a client.
-
-    returns a `MultiService` instance.
-    """
-    return MultiService(*[get_service(name, client) for name in names])
-
-
-def get_service(name, client):
-    """Instantiates a service object given a name and a client"""
-    return _SERVICES[name](client)
-
-
 class BaseService:
     """Base class for creating a service.
 
@@ -79,7 +64,7 @@ class BaseService:
     A concrete service class needs to implement `_run`.
     """
 
-    name = None  # using None here avoids registering this class
+    name: str
 
     def __init__(self, client, service_name):
         self.running = False

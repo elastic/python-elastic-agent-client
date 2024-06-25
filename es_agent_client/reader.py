@@ -1,4 +1,4 @@
-import grpc
+import grpc  # type: ignore
 
 from es_agent_client.client import V2, V2Options
 from es_agent_client.generated.elastic_agent_client_pb2 import (
