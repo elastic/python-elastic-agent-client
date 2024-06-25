@@ -1,6 +1,6 @@
 agents:
   useVault: true
-  image: python:3.10-slim-bookworm
+  image: "python:3.10"
 
 steps:
   - label: ":face_with_peeking_eye: Lint"
