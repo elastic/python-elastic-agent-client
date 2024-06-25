@@ -96,4 +96,4 @@ Instead, when `make generate` runs, it will:
 - [ ] one day...
   - [ ] support "custom actions" to trigger a sync, test connection, etc
   - [ ] capture diagnostic metrics. See [suggested metrics](https://docs.google.com/document/d/1NaaoweevnylnGAPXzuwvwuFcC7dYSIDNUoBkf2SCR5I/edit#heading=h.gf5gk6n81441)
-
+  - [ ] add automation to re-generate+PR if source protos are changed. GH action on elastic-agent-client repo?
