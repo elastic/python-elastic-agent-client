@@ -1,6 +1,6 @@
 agents:
   useVault: true
-  image: family/enterprise-search-ubuntu-2204-connectors-py # TODO
+  image: python:3.10-slim-bookworm
 
 steps:
   - label: ":face_with_peeking_eye: Lint"
