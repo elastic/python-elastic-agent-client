@@ -45,7 +45,7 @@ def version_info():
 @mark.asyncio
 @patch("grpc.ssl_channel_credentials", Mock())
 @patch("grpc.aio.secure_channel", Mock())
-async def test_thing(input_stream, version_info, v2_options):
+async def test_new_v2_from_reader(input_stream, version_info, v2_options):
     try:
         v2_client = new_v2_from_reader(input, ver=version_info, opts=v2_options)
         assert (
@@ -53,4 +53,4 @@ async def test_thing(input_stream, version_info, v2_options):
             == "V2 Client: (agent id: 1, agent version: 1, name: Test, target: http://acme.com:1234)"
         )
     finally:
-        input.close()
+        input_stream.close()
