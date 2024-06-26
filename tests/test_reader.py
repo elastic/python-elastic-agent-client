@@ -47,7 +47,7 @@ def version_info():
 @patch("grpc.aio.secure_channel", Mock())
 async def test_new_v2_from_reader(input_stream, version_info, v2_options):
     try:
-        v2_client = new_v2_from_reader(input, ver=version_info, opts=v2_options)
+        v2_client = new_v2_from_reader(input_stream, ver=version_info, opts=v2_options)
         assert (
             str(v2_client)
             == "V2 Client: (agent id: 1, agent version: 1, name: Test, target: http://acme.com:1234)"
