@@ -80,7 +80,6 @@ class ExtraLogger(logging.Logger):
 
 
 def set_logger(log_level=logging.INFO):
-    global logger
     formatter = ColorFormatter("FMWK")
 
     try:
@@ -102,4 +101,5 @@ def set_logger(log_level=logging.INFO):
     return _logger
 
 
+global logger
 logger: logging.Logger = set_logger()
