@@ -9,8 +9,6 @@ Logger -- sets the logging and provides a `logger` global object.
 import logging
 from functools import cached_property
 
-logger: logging.Logger
-
 
 class ColorFormatter(logging.Formatter):
     GREY = "\x1b[38;20m"
@@ -85,18 +83,23 @@ def set_logger(log_level=logging.INFO):
     global logger
     formatter = ColorFormatter("FMWK")
 
-    if logger is None:
+    try:
+        _logger = logger
+    except NameError:
+        _logger = None
+
+    if _logger is None:
         logging.setLoggerClass(ExtraLogger)
-        logger = logging.getLogger("agent-client-py")
-        logger.handlers.clear()
+        _logger = logging.getLogger("agent-client-py")
+        _logger.handlers.clear()
         handler = logging.StreamHandler()
-        logger.addHandler(handler)
+        _logger.addHandler(handler)
 
-    logger.propagate = False
-    logger.setLevel(log_level)
-    logger.handlers[0].setLevel(log_level)
-    logger.handlers[0].setFormatter(formatter)
-    return logger
+    _logger.propagate = False
+    _logger.setLevel(log_level)
+    _logger.handlers[0].setLevel(log_level)
+    _logger.handlers[0].setFormatter(formatter)
+    return _logger
 
 
-set_logger()
+logger: logging.Logger = set_logger()
