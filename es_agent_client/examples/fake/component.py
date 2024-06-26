@@ -3,6 +3,7 @@ import asyncio
 import functools
 import signal
 import sys
+from typing import Optional
 
 from elasticsearch import AsyncElasticsearch
 
@@ -36,7 +37,7 @@ class FakeOutputService(BaseService):
     def __init__(self, agent_client: V2):
         super().__init__(agent_client, self.name)
         self.agent_client: V2 = agent_client
-        self.es_client: AsyncElasticsearch
+        self.es_client: Optional[AsyncElasticsearch] = None
 
     async def _run(self):
         await asyncio.sleep(0)
