@@ -37,7 +37,7 @@ def new_v2_from_reader(reader, ver, opts: V2Options):
         private_key=info.peer_key,
         certificate_chain=info.peer_cert,
     )
-    channel = grpc.aio.secure_channel(  # TODO: this should use `grpc.aio`, if I can figure out why that locks other tasks
+    channel = grpc.aio.secure_channel(
         info.addr,
         channel_credentials,
         options=[("grpc.ssl_target_name_override", info.server_name)],
