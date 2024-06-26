@@ -1,15 +1,16 @@
-from pytest import fixture, mark
-from unittest.mock import Mock, patch
 import tempfile
-from es_agent_client.client import V2, V2Options, VersionInfo
-from es_agent_client.reader import new_v2_from_reader
+from unittest.mock import Mock, patch
+
+from pytest import fixture, mark
+
 import es_agent_client.generated.elastic_agent_client_pb2 as proto
-from es_agent_client.generated.elastic_agent_client_pb2_grpc import ElasticAgentStub
+from es_agent_client.client import V2Options, VersionInfo
+from es_agent_client.reader import new_v2_from_reader
 from es_agent_client.util.logger import logger
 
 
 @fixture
-def input():
+def input_stream():
     startup_info = proto.StartUpInfo(
         addr="http://acme.com:1234",
         server_name="Server Name",
@@ -44,7 +45,7 @@ def version_info():
 @mark.asyncio
 @patch("grpc.ssl_channel_credentials", Mock())
 @patch("grpc.aio.secure_channel", Mock())
-async def test_thing(input, version_info, v2_options):
+async def test_thing(input_stream, version_info, v2_options):
     try:
         v2_client = new_v2_from_reader(input, ver=version_info, opts=v2_options)
         assert (
