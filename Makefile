@@ -31,7 +31,7 @@ autoformat: dev
 	bin/ruff es_agent_client --fix
 	bin/ruff tests --fix
 
-test: dev
+test: dev install
 	bin/pytest --cov-report term-missing --cov-fail-under $(COVERAGE_THRESHOLD) --cov-report html --cov=es_agent_client --fail-slow=$(SLOW_TEST_THRESHOLD) -sv tests
 
 clean:
