@@ -1,11 +1,11 @@
 import asyncio
+from unittest.mock import Mock
 
+import pytest
+
+import es_agent_client.generated.elastic_agent_client_pb2 as proto
 from es_agent_client.client import V2, Unit, VersionInfo
 from es_agent_client.service.checkin import CheckinV2Service
-import pytest
-from unittest.mock import Mock
-import es_agent_client.generated.elastic_agent_client_pb2 as proto
-
 
 
 @pytest.fixture
@@ -13,6 +13,7 @@ def checkin_handler():
     checkin_handler = Mock()
     checkin_handler.apply_from_client = Mock()
     return checkin_handler
+
 
 @pytest.fixture
 def v2_client():
@@ -45,6 +46,7 @@ async def test_do_checkin(v2_client, checkin_handler):
     assert sent.units[0].id == "1"
     assert sent.version_info.name == "Test"
 
+
 @pytest.mark.asyncio
 async def test_do_checkin_with_no_units(v2_client, checkin_handler):
     v2_client.units = None
@@ -52,6 +54,7 @@ async def test_do_checkin_with_no_units(v2_client, checkin_handler):
     send_queue = asyncio.Queue()
     await checkin_service.do_checkin(send_queue)
     assert send_queue.empty()
+
 
 @pytest.mark.asyncio
 async def test_do_checkin_when_versioninfo_sent(v2_client, checkin_handler):

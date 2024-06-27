@@ -32,8 +32,8 @@ class V2Options:
 
 
 class Unit:
-    def __init__(self, id=None):
-        self.id: Optional[str] = id
+    def __init__(self, unit_id=None):
+        self.id: Optional[str] = unit_id
         self.unit_type: Optional[proto.UnitType] = None
         self.expected_state: Optional[proto.State] = None
         self.log_level: Optional[proto.UnitLogLevel] = None
