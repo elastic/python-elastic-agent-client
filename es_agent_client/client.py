@@ -11,7 +11,7 @@ from es_agent_client.generated.elastic_agent_client_pb2_grpc import ElasticAgent
 
 class VersionInfo:
     def __init__(
-        self, name: str, meta: Optional[dict], build_hash: Optional[str] = None
+        self, name: str, meta: Optional[dict] = None, build_hash: Optional[str] = None
     ):
         self.name = name
         self.meta = meta
@@ -32,8 +32,8 @@ class V2Options:
 
 
 class Unit:
-    def __init__(self):
-        self.id: Optional[str] = None
+    def __init__(self, id=None):
+        self.id: Optional[str] = id
         self.unit_type: Optional[proto.UnitType] = None
         self.expected_state: Optional[proto.State] = None
         self.log_level: Optional[proto.UnitLogLevel] = None
