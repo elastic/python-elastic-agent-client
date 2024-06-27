@@ -1,14 +1,12 @@
----
-# $yaml-language-server: $schema=https://raw.githubusercontent.com/buildkite/pipeline-schema/main/schema.json
+agents:
+  useVault: true
+  image: "python:3.10"
+
 steps:
-  - label: "Build"
-    command: "true"
+  - label: ":face_with_peeking_eye: Lint"
+    command: "make lint"
+    timeout_in_minutes: 5
 
-  - label: "Test"
-    command: "true"
-
-  - label: "Deploy"
-    command: "true"
-
-  - label: "Publish"
-    command: "true"
+  - label: ":pytest: Test"
+    command: "make test"
+    timeout_in_minutes: 5

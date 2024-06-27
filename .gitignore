@@ -1,0 +1,23 @@
+bin
+lib
+include
+.coverage
+*.un~
+*.swp
+pyvenv.cfg
+*.egg-info
+__pycache__
+dist
+
+# jetbrains files
+.idea
+*.iml
+.cli
+
+**/venv
+
+# temp dir for proto file
+.proto
+
+# pyoxidize
+build

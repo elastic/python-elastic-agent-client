@@ -1,0 +1,20 @@
+{
+  "pythonVersion": "3.10",
+  "include": [
+    "es_agent_client"
+  ],
+  "reportMissingImports": false,
+  "reportMissingModuleSource": false,
+  "reportOptionalMemberAccess": false,
+  "exclude": [
+    "**/tests",
+    "**/__pycache__",
+    "**/generated",
+  ],
+  "executionEnvironments": [
+    {
+      "root": "./",
+      "venv": "./"
+    }
+  ]
+}
