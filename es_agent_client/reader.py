@@ -1,7 +1,7 @@
 import grpc  # type: ignore
 
-from es_agent_client.client import V2, V2Options
 import es_agent_client.generated.elastic_agent_client_pb2 as proto
+from es_agent_client.client import V2, V2Options
 from es_agent_client.generated.elastic_agent_client_pb2_grpc import ElasticAgentStub
 from es_agent_client.util.logger import logger
 
