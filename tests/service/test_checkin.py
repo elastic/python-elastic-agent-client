@@ -152,6 +152,7 @@ async def test_apply_expected_on_empty(v2_client, checkin_handler, checkin_expec
     await checkin_service.apply_expected(checkin_expected)
     v2_client.sync_component.assert_called_once()
     v2_client.sync_units.assert_called_once()
+    checkin_handler.apply_from_client.assert_awaited_once()
 
 
 @pytest.mark.asyncio
@@ -171,6 +172,7 @@ async def test_appy_expected_on_changed_component(
     # syncup happens
     v2_client.sync_component.assert_called_once()
     v2_client.sync_units.assert_called_once()
+    checkin_handler.apply_from_client.assert_awaited_once()
 
 
 @pytest.mark.asyncio
@@ -190,6 +192,7 @@ async def test_appy_expected_on_changed_unit(
     # syncup happens
     v2_client.sync_component.assert_called_once()
     v2_client.sync_units.assert_called_once()
+    checkin_handler.apply_from_client.assert_awaited_once()
 
 
 @pytest.mark.asyncio
@@ -210,6 +213,7 @@ async def test_appy_expected_on_added_unit(
     # syncup happens
     v2_client.sync_component.assert_called_once()
     v2_client.sync_units.assert_called_once()
+    checkin_handler.apply_from_client.assert_awaited_once()
 
 
 @pytest.mark.asyncio
@@ -230,6 +234,7 @@ async def test_appy_expected_on_removed_unit(
     # syncup happens
     v2_client.sync_component.assert_called_once()
     v2_client.sync_units.assert_called_once()
+    checkin_handler.apply_from_client.assert_awaited_once()
 
 
 @pytest.mark.asyncio
@@ -249,3 +254,4 @@ async def test_apply_expected_when_no_change(
     # syncup does not happen
     v2_client.sync_component.assert_not_called()
     v2_client.sync_units.assert_not_called()
+    checkin_handler.apply_from_client.assert_not_awaited()
