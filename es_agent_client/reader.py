@@ -1,21 +1,17 @@
 import grpc  # type: ignore
 
 from es_agent_client.client import V2, V2Options
-from es_agent_client.generated.elastic_agent_client_pb2 import (
-    AgentInfo,
-    ConnectionSupports,
-    StartUpInfo,
-)
+import es_agent_client.generated.elastic_agent_client_pb2 as proto
 from es_agent_client.generated.elastic_agent_client_pb2_grpc import ElasticAgentStub
 from es_agent_client.util.logger import logger
 
 
 def new_v2_from_reader(reader, ver, opts: V2Options):
-    info = StartUpInfo()
+    info = proto.StartUpInfo()
     data = reader.read()  # read input
     info.ParseFromString(data)
     if info.agent_info is not None:
-        opts.agent_info = AgentInfo(
+        opts.agent_info = proto.AgentInfo(
             id=info.agent_info.id,
             version=info.agent_info.version,
             snapshot=info.agent_info.snapshot,
@@ -27,7 +23,7 @@ def new_v2_from_reader(reader, ver, opts: V2Options):
         raise RuntimeError(msg)
 
     for s in info.supports:
-        if s == ConnectionSupports.CheckinChunking:
+        if s == proto.ConnectionSupports.CheckinChunking:
             opts.chunking_allowed = True
 
     logger.info("Setting up secure channel")

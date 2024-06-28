@@ -18,8 +18,8 @@ def input_stream():
         ca_cert=b"ca_cert",
         peer_cert=b"peer_cert",
         peer_key=b"peer_key",
-        services=[],
-        supports=[],
+        services=[proto.ConnInfoServices.CheckinV2],
+        supports=[proto.ConnectionSupports.CheckinChunking],
         max_message_size=1000,
         agent_info=proto.AgentInfo(
             id="1", version="1", snapshot=False, mode=proto.AgentManagedMode.STANDALONE
