@@ -34,7 +34,7 @@ async def test_error_on_unset_stub(checkin_handler):
 
 @pytest.mark.asyncio
 async def test_do_checkin(v2_client, checkin_handler):
-    v2_client.units = [Unit(id="1")]
+    v2_client.units = [Unit(unit_id="1")]
     v2_client.version_info = VersionInfo(name="Test")
     checkin_service = CheckinV2Service(v2_client, checkin_handler)
     send_queue = asyncio.Queue()
