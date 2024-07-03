@@ -11,7 +11,7 @@ from es_agent_client.generated.elastic_agent_client_pb2_grpc import ElasticAgent
 
 class VersionInfo:
     def __init__(
-        self, name: str, meta: Optional[dict], build_hash: Optional[str] = None
+        self, name: str, meta: Optional[dict] = None, build_hash: Optional[str] = None
     ):
         self.name = name
         self.meta = meta
@@ -32,22 +32,39 @@ class V2Options:
 
 
 class Unit:
-    def __init__(self):
-        self.id: Optional[str] = None
-        self.unit_type: Optional[proto.UnitType] = None
-        self.expected_state: Optional[proto.State] = None
-        self.log_level: Optional[proto.UnitLogLevel] = None
-        self.config: Optional[proto.UnitExpectedConfig] = None
-        self.config_idx: Optional[int] = None
-        self.features: Optional[proto.Features] = None
-        self.features_idx: Optional[int] = None
-        self.apm: Optional[proto.APMConfig] = None
-        self.state: Optional[proto.State] = None
-        self.state_msg: Optional[str] = None
-        self.state_payload: Optional[dict] = None
-        self.actions: Optional[dict] = None
-        self.client: Optional[V2] = None
-        self.diag_hooks: Optional[dict] = None
+    def __init__(
+        self,
+        unit_id=None,
+        unit_type=None,
+        expected_state=None,
+        log_level=None,
+        config=None,
+        config_idx=None,
+        features=None,
+        features_idx=None,
+        apm=None,
+        state=None,
+        state_msg=None,
+        state_payload=None,
+        actions=None,
+        client=None,
+        diag_hooks=None,
+    ):
+        self.id: Optional[str] = unit_id
+        self.unit_type: Optional[proto.UnitType] = unit_type
+        self.expected_state: Optional[proto.State] = expected_state
+        self.log_level: Optional[proto.UnitLogLevel] = log_level
+        self.config: Optional[proto.UnitExpectedConfig] = config
+        self.config_idx: Optional[int] = config_idx
+        self.features: Optional[proto.Features] = features
+        self.features_idx: Optional[int] = features_idx
+        self.apm: Optional[proto.APMConfig] = apm
+        self.state: Optional[proto.State] = state
+        self.state_msg: Optional[str] = state_msg
+        self.state_payload: Optional[dict] = state_payload
+        self.actions: Optional[dict] = actions
+        self.client: Optional[V2] = client
+        self.diag_hooks: Optional[dict] = diag_hooks
 
     def to_observed(self) -> proto.UnitObserved:
         return proto.UnitObserved(
