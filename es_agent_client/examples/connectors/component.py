@@ -36,7 +36,7 @@ class ConnectorActionHandler(BaseActionHandler):
 
 class ConnectorServiceManager(BaseService):
 
-    name = "connector-serivce-manager"
+    name = "connector-service-manager"
 
     def __init__(self, client, initial_config):
         super().__init__(client, "connector-service-manager")
@@ -129,7 +129,36 @@ class ConnectorCheckinHandler(BaseCheckinHandler):
                     else:
                         raise ValueError("Invalid Elasticsearch credentials")
 
-                    new_config = {"elasticsearch": es_creds}
+                    native_services = [
+                      "azure_blob_storage",
+                      "box",
+                      "confluence",
+                      "dropbox",
+                      "github",
+                      "gmail",
+                      "google_cloud_storage",
+                      "google_drive",
+                      "jira",
+                      "mongodb",
+                      "mssql",
+                      "mysql",
+                      "notion",
+                      "onedrive",
+                      "oracle",
+                      "outlook",
+                      "network_drive",
+                      "postgresql",
+                      "s3",
+                      "salesforce",
+                      "servicenow",
+                      "sharepoint_online",
+                      "slack",
+                      "microsoft_teams",
+                      "zoom",
+                    ]
+
+                    new_config = {"elasticsearch": es_creds, "_force_allow_native": True, "service": {
+                        "log_level": "DEBUG"}, "native_service_types": native_services}
 
                     # This assumes the connector service offers "native" experience
                     # If adding specigic connecptor you need to hardcode here

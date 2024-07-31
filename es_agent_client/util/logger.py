@@ -79,8 +79,8 @@ class ExtraLogger(logging.Logger):
         super(ExtraLogger, self)._log(level, msg, args, exc_info, extra)
 
 
-def set_logger(log_level=logging.INFO):
-    formatter = ColorFormatter("FMWK")
+def set_logger(log_level=logging.DEBUG):
+    formatter = ColorFormatter("AGENT")
 
     try:
         _logger = logger
