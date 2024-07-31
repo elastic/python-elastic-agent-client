@@ -131,6 +131,10 @@ class ConnectorCheckinHandler(BaseCheckinHandler):
 
                     new_config = {"elasticsearch": es_creds}
 
+                    # This assumes the connector service offers "native" experience
+                    # If adding specigic connecptor you need to hardcode here
+                    # new_config["connectors"] = [{"connector_id": ...., "service_type": ..., "api_key": ....}]
+
                     # this restarts all connector services
                     # this should happen only when user changes the target elasticsearch output
                     # in agent policy
