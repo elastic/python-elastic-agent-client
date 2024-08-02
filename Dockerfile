@@ -31,8 +31,8 @@ RUN /usr/share/python-elastic-agent/bin/pip install -r /usr/share/connectors/req
 
 # Add component
 # Agent directory name is dynamic and based on build hash, so we need to move in two steps
-COPY ./dist/python-elastic-agent-client /tmp/python-elastic-agent-client
-COPY ./dist/python-elastic-agent-client.spec.yml /tmp/python-elastic-agent-client.spec.yml
+COPY ./elastic-package/python-elastic-agent-client /tmp/python-elastic-agent-client
+COPY ./elastic-package/python-elastic-agent-client.spec.yml /tmp/python-elastic-agent-client.spec.yml
 RUN mv /tmp/python-elastic-agent-client /usr/share/elastic-agent/data/elastic-agent-$(cat /usr/share/elastic-agent/.build_hash.txt| cut -c 1-6)/components/python-elastic-agent-client
 RUN mv /tmp/python-elastic-agent-client.spec.yml /usr/share/elastic-agent/data/elastic-agent-$(cat /usr/share/elastic-agent/.build_hash.txt| cut -c 1-6)/components/python-elastic-agent-client.spec.yml
 
