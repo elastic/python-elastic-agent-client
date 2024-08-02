@@ -4,6 +4,10 @@ PYTHON=python3.10
 COVERAGE_THRESHOLD=0 # percents
 SLOW_TEST_THRESHOLD=1 # seconds
 
+ES_HOST?=http://127.0.0.1:9200
+ES_USERNAME?=elastic
+ES_PASSWORD?=changeme
+
 bin/python:
 	$(PYTHON) -m venv .
 	bin/pip install --upgrade pip
@@ -36,3 +40,15 @@ test: dev install
 
 clean:
 	rm -rf bin lib include .proto
+
+docker-build:
+	docker build -t python-test-agent .
+
+docker-run:
+	docker run \
+		--env ELASTICSEARCH_HOSTS=$(ES_HOST) \
+		--env ELASTICSEARCH_USERNAME=$(ES_USERNAME) \
+		--env ELASTICSEARCH_PASSWORD=$(ES_PASSWORD) \
+		python-test-agent
+
+docker-all: docker-build docker-run
