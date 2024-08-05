@@ -41,24 +41,20 @@ class ConnectorServiceManager(BaseService):
     def __init__(self, client, initial_config):
         super().__init__(client, "connector-service-manager")
         self.config = initial_config
-        self.config_changed = False
+        self.should_restart_services = False
         self.connector_services = []
         self._multi_service = None
 
     async def _run(self):
         try:
             while self.running:
-                logger.info("===== ConnectorServiceManager is running")
                 try:
-                    if not self._multi_service:
-                        logger.info("Setting up connectors")
-                        # await self.setup_connectors()
-                    if self.config_changed:
+                    if self.should_restart_services:
                         logger.info(
                             "===== Connector config change detected! Restarting services"
                         )
-                        await self.restart_services()
-                        self.config_changed = False
+                        await self.setup_connectors()
+                        self.should_restart_services = False
                     if self._multi_service:
                         logger.info(
                             "====== Starting the multi service to run all connector services"
@@ -69,14 +65,17 @@ class ConnectorServiceManager(BaseService):
                     raise
                 if not self.running:
                     break
-                await self._sleeps.sleep(5)
+                await self._sleeps.sleep(0)
         finally:
             if self._multi_service:
-                self._multi_service.stop()
+                await self._stop_services()
         return 0
 
     async def setup_connectors(self):
         try:
+            # stop services tied to multiservice just in case
+            await self._stop_services()
+
             self.connector_services = service_cli.get_connector_services(
                 self.config, log_level="INFO"
             )
@@ -91,18 +90,17 @@ class ConnectorServiceManager(BaseService):
             connector.stop()
 
     async def update_config(self, new_config):
-        self.config.update(new_config)
-        self.config_changed = True
-        await self.restart_services()
+        self.config = new_config
+        self.should_restart_services = True
+        await self._stop_services()
 
-    async def restart_services(self):
+    async def _stop_services(self):
         try:
             for connector in self.connector_services:
                 connector.stop()
             self.connector_services.clear()
-            await self.setup_connectors()
         except Exception as e:
-            logger.exception(f"Error restarting services: {e}")
+            logger.exception(f"Error stopping connector services: {e}")
             raise
 
 
