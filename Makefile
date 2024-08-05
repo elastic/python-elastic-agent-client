@@ -4,7 +4,7 @@ PYTHON=python3.10
 COVERAGE_THRESHOLD=0 # percents
 SLOW_TEST_THRESHOLD=1 # seconds
 
-ES_HOST?=http://127.0.0.1:9200
+ES_HOSTS?=http://127.0.0.1:9200
 ES_USERNAME?=elastic
 ES_PASSWORD?=changeme
 
@@ -46,7 +46,7 @@ docker-build:
 
 docker-run:
 	docker run \
-		--env ELASTICSEARCH_HOSTS=$(ES_HOST) \
+		--env ELASTICSEARCH_HOSTS=$(ES_HOSTS) \
 		--env ELASTICSEARCH_USERNAME=$(ES_USERNAME) \
 		--env ELASTICSEARCH_PASSWORD=$(ES_PASSWORD) \
 		python-test-agent
