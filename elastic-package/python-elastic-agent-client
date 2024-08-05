@@ -1,0 +1,4 @@
+#!/bin/bash
+PY_AGENT_CLIENT_PATH=/usr/share/python-elastic-agent/
+PYTHON_PATH=$PY_AGENT_CLIENT_PATH/bin/python
+$PYTHON_PATH $PY_AGENT_CLIENT_PATH/es_agent_client/examples/connectors/component.py
