@@ -19,7 +19,7 @@ from es_agent_client.util.async_tools import (
 )
 from es_agent_client.util.logger import logger
 
-sys.path.append("/Users/jedr/connectors-python")
+sys.path.append("/usr/share/connectors")
 
 from connectors import service_cli
 
@@ -36,7 +36,7 @@ class ConnectorActionHandler(BaseActionHandler):
 
 class ConnectorServiceManager(BaseService):
 
-    name = "connector-serivce-manager"
+    name = "connector-service-manager"
 
     def __init__(self, client, initial_config):
         super().__init__(client, "connector-service-manager")
@@ -93,6 +93,9 @@ class ConnectorServiceManager(BaseService):
         self.config = new_config
         self.should_restart_services = True
         await self._stop_services()
+
+    def shutdown_multi_service(self, signal_name):
+        self._multi_service.shutdown(signal_name)
 
     async def _stop_services(self):
         try:
@@ -231,6 +234,7 @@ async def _start_service(loop, buffer, ver, opts):
     def _shutdown(signal_name):
         sleeps_for_retryable.cancel(signal_name)
         multi_service.shutdown(signal_name)
+        connector_service_manager.shutdown_multi_service(signal_name)
 
     for sig in (signal.SIGINT, signal.SIGTERM):
         loop.add_signal_handler(sig, functools.partial(_shutdown, sig.name))
