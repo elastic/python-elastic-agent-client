@@ -41,17 +41,39 @@ class ConnectorServiceManager(BaseService):
     def __init__(self, client, initial_config):
         super().__init__(client, "connector-service-manager")
         self.config = initial_config
+        self.config_changed = False
         self.connector_services = []
         self._multi_service = None
 
     async def _run(self):
         try:
-            await self.setup_connectors()
+            while self.running:
+                logger.info("===== ConnectorServiceManager is running")
+                try:
+                    if not self._multi_service:
+                        logger.info("Setting up connectors")
+                        # await self.setup_connectors()
+                    if self.config_changed:
+                        logger.info(
+                            "===== Connector config change detected! Restarting services"
+                        )
+                        await self.restart_services()
+                        self.config_changed = False
+                    if self._multi_service:
+                        logger.info(
+                            "====== Starting the multi service to run all connector services"
+                        )
+                        await self._multi_service.run()
+                except Exception as e:
+                    logger.exception(f"Error in ConnectorServiceManager: {e}")
+                    raise
+                if not self.running:
+                    break
+                await self._sleeps.sleep(5)
+        finally:
             if self._multi_service:
-                await self._multi_service.run()
-        except Exception as e:
-            logger.exception(f"Error in ConnectorServiceManager: {e}")
-            raise
+                self._multi_service.stop()
+        return 0
 
     async def setup_connectors(self):
         try:
@@ -69,14 +91,18 @@ class ConnectorServiceManager(BaseService):
             connector.stop()
 
     async def update_config(self, new_config):
+        self.config.update(new_config)
+        self.config_changed = True
+        await self.restart_services()
+
+    async def restart_services(self):
         try:
-            self.config.update(new_config)
-            self.stop()
+            for connector in self.connector_services:
+                connector.stop()
             self.connector_services.clear()
             await self.setup_connectors()
-            asyncio.create_task(self.run())
         except Exception as e:
-            logger.exception(f"Error updating config: {e}")
+            logger.exception(f"Error restarting services: {e}")
             raise
 
 
@@ -97,17 +123,14 @@ class ConnectorCheckinHandler(BaseCheckinHandler):
                 for unit in self.client.units
                 if unit.unit_type == proto.UnitType.OUTPUT
             ]
+            inputs = [
+                unit
+                for unit in self.client.units
+                if unit.unit_type == proto.UnitType.INPUT
+            ]
+
             if len(outputs) > 0 and outputs[0].config:
                 source = outputs[0].config.source
-                # if (
-                #     source.fields.get("hosts")
-                #     and source.fields.get("username")
-                #     and source.fields.get("password")
-                # ):
-                #     logger.info("instantiating ES client")
-                #     self.output_service.create_es_client(
-                #         source["hosts"], source["username"], source["password"]
-                #     )
                 if source.fields.get("hosts") and (
                     source.fields.get("api_key")
                     or source.fields.get("username")
@@ -129,12 +152,39 @@ class ConnectorCheckinHandler(BaseCheckinHandler):
                     else:
                         raise ValueError("Invalid Elasticsearch credentials")
 
-                    new_config = {"elasticsearch": es_creds}
+                    native_services = [
+                        "azure_blob_storage",
+                        "box",
+                        "confluence",
+                        "dropbox",
+                        "github",
+                        "gmail",
+                        "google_cloud_storage",
+                        "google_drive",
+                        "jira",
+                        "mongodb",
+                        "mssql",
+                        "mysql",
+                        "notion",
+                        "onedrive",
+                        "oracle",
+                        "outlook",
+                        "network_drive",
+                        "postgresql",
+                        "s3",
+                        "salesforce",
+                        "servicenow",
+                        "sharepoint_online",
+                        "slack",
+                        "microsoft_teams",
+                        "zoom",
+                    ]
 
-                    # This assumes the connector service offers "native" experience
-                    # If adding specigic connecptor you need to hardcode here
-                    # new_config["connectors"] = [{"connector_id": ...., "service_type": ..., "api_key": ....}]
-
+                    new_config = {
+                        "elasticsearch": es_creds,
+                        "_force_allow_native": True,
+                        "native_service_types": native_services,
+                    }
                     # this restarts all connector services
                     # this should happen only when user changes the target elasticsearch output
                     # in agent policy

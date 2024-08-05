@@ -80,7 +80,7 @@ class ExtraLogger(logging.Logger):
 
 
 def set_logger(log_level=logging.INFO):
-    formatter = ColorFormatter("FMWK")
+    formatter = ColorFormatter("AGENT-CLI")
 
     try:
         _logger = logger
