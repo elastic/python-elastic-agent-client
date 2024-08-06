@@ -1,4 +1,4 @@
-FROM docker.elastic.co/beats/elastic-agent:sha256-fb23394461bc73b1787399553abc961e492a0596521e5dba84b45893cf701c4b
+FROM docker.elastic.co/elastic-agent/elastic-agent:sha256-fff74ac535403af9307ed6f93aad71ec95866bf6f1ec2da1bd7966e6bc17ae72
 USER root
 # Install dependencies
 RUN apt update
