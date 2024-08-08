@@ -1,0 +1,44 @@
+format_version: 3.2.1
+name: elastic_connectors
+title: "Elastic Connectors"
+version: 0.0.1
+source:
+  license: "Elastic-2.0"
+description: "This is a new package."
+type: input
+categories:
+  - custom
+conditions:
+  kibana:
+    version: "^8.14.3"
+  elastic:
+    subscription: "basic"
+screenshots:
+  - src: /img/sample-screenshot.png
+    title: Sample screenshot
+    size: 600x600
+    type: image/png
+icons:
+  - src: /img/sample-logo.svg
+    title: Sample logo
+    size: 32x32
+    type: image/svg+xml
+policy_templates:
+  - name: elastic-connectors
+    title: Elastic Connectors
+    description: Sync data with elastic connectorsgs
+    input: connectors-py
+    type: logs
+    use_output: elasticsearch
+    deployment_modes:
+      default:
+        enabled: false
+      agentless:
+        enabled: true
+elasticsearch:
+  index_template:
+    mappings:
+      subobjects: false
+owner:
+  github: elastic/integrations
+  type: elastic
