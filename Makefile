@@ -49,6 +49,7 @@ docker-run:
 		--env ELASTICSEARCH_HOSTS=$(ES_HOSTS) \
 		--env ELASTICSEARCH_USERNAME=$(ES_USERNAME) \
 		--env ELASTICSEARCH_PASSWORD=$(ES_PASSWORD) \
+		--network="host" \
 		python-test-agent
 
 docker-all: docker-build docker-run
