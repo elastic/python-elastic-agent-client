@@ -20,16 +20,16 @@ install: bin/python
 
 lint: dev
 	bin/mypy -p es_agent_client
-	bin/ruff es_agent_client
+	bin/ruff check es_agent_client
 	bin/pyright es_agent_client
-	bin/ruff tests
+	bin/ruff check tests
 	bin/pyright tests
 
 autoformat: dev
 	bin/black es_agent_client --exclude generated
 	bin/black tests
-	bin/ruff es_agent_client --fix
-	bin/ruff tests --fix
+	bin/ruff check es_agent_client --fix
+	bin/ruff check tests --fix
 
 test: dev install
 	bin/pytest --cov-report term-missing --cov-fail-under $(COVERAGE_THRESHOLD) --cov-report html --cov=es_agent_client --fail-slow=$(SLOW_TEST_THRESHOLD) -sv tests
