@@ -2,13 +2,13 @@ grpcio==1.65.4
 grpcio-tools==1.65.4
 protobuf==5.27.3
 uvloop==0.17.0
-elasticsearch[async]==8.14.0
+elasticsearch[async]==8.15.0
 black==23.12.1
 ruff==0.0.278
 pytest==7.4.4
 pytest-cov==4.1.0
 pytest-asyncio==0.23.8
-pytest-mock==3.11.1
+pytest-mock==3.14.0
 pytest-randomly==3.15.0
 pytest-fail-slow==0.6.0
 pyright==1.1.375
