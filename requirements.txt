@@ -4,7 +4,7 @@ protobuf==5.27.3
 uvloop==0.17.0
 elasticsearch[async]==8.15.0
 black==23.12.1
-ruff==0.0.278
+ruff==0.5.7
 pytest==7.4.4
 pytest-cov==4.1.0
 pytest-asyncio==0.23.8
