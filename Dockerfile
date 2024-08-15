@@ -13,21 +13,11 @@ RUN apt install python3.10 python3.10-venv make -y
 RUN add-apt-repository ppa:rmescandon/yq
 RUN apt install vim git yq -y
 
-# Pull connectors
-# TODO: when we're ready, figure out packaging and distribution of
-# connectors - we might have them zipped or distributed via pip
-WORKDIR /usr/share
-RUN git clone https://github.com/elastic/connectors.git && \
-  cd connectors && \
-  git checkout connectors-in-agentless-poc
-
 # Copy and install python agent client
 # TODO: also package this with revision and everything
 COPY ./ /usr/share/python-elastic-agent
 WORKDIR /usr/share/python-elastic-agent
 RUN make clean install
-# TODO: think of properly installing this
-RUN /usr/share/python-elastic-agent/bin/pip install -r /usr/share/connectors/requirements/x86_64.txt
 
 # Add component
 # Agent directory name is dynamic and based on build hash, so we need to move in two steps

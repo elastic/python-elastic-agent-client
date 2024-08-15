@@ -20,6 +20,7 @@ generate: bin/python dev
 	./scripts/generate.sh
 
 install: bin/python
+	bin/pip install -r requirements.txt
 	bin/pip install -e .
 
 lint: dev

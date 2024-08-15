@@ -19,8 +19,6 @@ from es_agent_client.util.async_tools import (
 )
 from es_agent_client.util.logger import logger
 
-sys.path.append("/usr/share/connectors")
-
 from connectors import service_cli
 
 CONNECTOR_SERVICE = "connector-service"
