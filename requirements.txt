@@ -1,5 +1,5 @@
 grpcio==1.65.4
-grpcio-tools==1.65.4
+grpcio-tools==1.65.5
 protobuf==5.27.3
 uvloop==0.19.0
 elasticsearch[async]==8.15.0
