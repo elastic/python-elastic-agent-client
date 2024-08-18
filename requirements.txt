@@ -6,7 +6,7 @@ elasticsearch[async]==8.15.0
 black==23.12.1
 ruff==0.5.7
 pytest==7.4.4
-pytest-cov==4.1.0
+pytest-cov==5.0.0
 pytest-asyncio==0.23.8
 pytest-mock==3.14.0
 pytest-randomly==3.15.0
