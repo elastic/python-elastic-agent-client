@@ -9,9 +9,12 @@ setup(
     license='Elastic v2',
     packages=find_packages(),
     install_requires=[
-        'grpcio>=1.62',
-        'protobuf>=4.25',
-        'uvloop>=0.17',
-        'elasticsearch[async]'
+        'grpcio>=1.65, <2',
+        'grpcio-tools>=1.65, <2',
+        'protobuf>=5.27, <6',
+        'types-protobuf>=5.27, <6',
+        'uvloop>=0.20, <1',
+        'mypy>=1.11, <2',
+        'elasticsearch[async]>=8.14'
     ],
 )

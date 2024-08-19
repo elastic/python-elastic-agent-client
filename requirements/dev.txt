@@ -1,0 +1,9 @@
+black>=23
+ruff>=0.6
+pytest>=7
+pytest-cov>=4
+pytest-asyncio>=0.23
+pytest-mock>=3
+pytest-randomly>=3
+pytest-fail-slow>=0.6
+pyright>=1

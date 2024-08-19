@@ -9,7 +9,7 @@ bin/python:
 	bin/pip install --upgrade pip
 
 dev: bin/python
-	bin/pip install -r requirements.txt
+	bin/pip install -r requirements/lib.txt -r requirements/dev.txt
 
 generate: bin/python dev
 	./scripts/download-proto.sh
