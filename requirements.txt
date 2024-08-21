@@ -11,6 +11,6 @@ pytest-asyncio==0.23.8
 pytest-mock==3.14.0
 pytest-randomly==3.15.0
 pytest-fail-slow==0.6.0
-pyright==1.1.376
+pyright==1.1.377
 mypy==1.11.1
 types-protobuf==5.27.0.20240626
