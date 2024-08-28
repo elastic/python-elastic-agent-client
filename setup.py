@@ -14,7 +14,6 @@ setup(
         'protobuf>=5.27, <6',
         'types-protobuf>=5.27, <6',
         'uvloop>=0.20, <1',
-        'mypy>=1.11, <2',
-        'elasticsearch[async]>=8.14'
+        'mypy>=1.11, <2'
     ],
 )
