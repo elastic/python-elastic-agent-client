@@ -1,0 +1,49 @@
+[project]
+name = "es_agent_client"
+version = "0.0.1"
+description = "A python implementation of an Elastic Agent Client"
+url = "https://github.com/elastic/python-elastic-agent-client"
+readme = "README.md"
+authors = [
+    { name = "Sean Story", email = "sean.story@elastic.co" },
+    { name = "Search Extract and Transform Team", email = "enterprise-search-ingestion-team@elastic.co" }
+]
+
+classifiers = [
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.12",
+    "License :: Other/Proprietary License"
+]
+
+requires-python = ">=3.10"
+dependencies = [
+    "grpcio>=1.65, <2",
+    "grpcio-tools>=1.65, <2",
+    "protobuf>=5.27, <6",
+    "types-protobuf>=5.27, <6",
+    "uvloop>=0.20, <1",
+    "mypy>=1.11, <2"
+]
+
+[build-system]
+requires = [
+  "hatchling"
+]
+build-backend = "hatchling.build"
+
+[tool.hatch.build]
+dev-mode-dirs = ["."]
+directory="dist"
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "es_agent_client",
+  "scripts"
+]
+exclude = [
+  "es_agent_client/examples"
+]
