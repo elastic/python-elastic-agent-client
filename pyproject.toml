@@ -1,11 +1,10 @@
 [project]
-name = "es_agent_client"
+name = "elastic_agent_client"
 version = "0.0.1"
 description = "A python implementation of an Elastic Agent Client"
 url = "https://github.com/elastic/python-elastic-agent-client"
 readme = "README.md"
 authors = [
-    { name = "Sean Story", email = "sean.story@elastic.co" },
     { name = "Search Extract and Transform Team", email = "enterprise-search-ingestion-team@elastic.co" }
 ]
 
