@@ -6,7 +6,9 @@ from elastic_agent_client.generated.elastic_agent_client_future_pb2_grpc import 
     ElasticAgentLog,
     ElasticAgentStore,
 )
-from elastic_agent_client.generated.elastic_agent_client_pb2_grpc import ElasticAgentStub
+from elastic_agent_client.generated.elastic_agent_client_pb2_grpc import (
+    ElasticAgentStub,
+)
 
 
 class VersionInfo:

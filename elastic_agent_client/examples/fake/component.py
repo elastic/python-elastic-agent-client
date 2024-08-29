@@ -20,7 +20,7 @@ from elastic_agent_client.util.async_tools import (
     get_event_loop,
     sleeps_for_retryable,
 )
-from elastic.util.logger import logger
+from elastic_agent_client.util.logger import logger
 
 FAKE = "fake"
 
