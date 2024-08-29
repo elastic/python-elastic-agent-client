@@ -13,7 +13,7 @@ A simple executable shell script will do.
 #!/bin/bash
 PYTHON_PATH=/path/to/bin/python
 PY_AGENT_CLIENT_PATH=/path/to/python-elastic-agent-client
-$PYTHON_PATH $PY_AGENT_CLIENT_PATH/es_agent_client/examples/fake/component.py
+$PYTHON_PATH $PY_AGENT_CLIENT_PATH/elastic_agent_client/examples/fake/component.py
 ```
 
 Put those contents in a `elastic-agent*/data/elastic-agent*/components/python-elastic-agent-client` file, and
@@ -79,7 +79,7 @@ To avoid duplicate code, they are not checked in here.
 Instead, when `make generate` runs, it will:
 1. download the raw `*.proto` files from the GoLang repo
 2. use `grpc_tools.protoc` to generate python code from those specs
-3. store that generated code in `es_agent_client/generated`
+3. store that generated code in `elastic_agent_client/generated`
 4. post-process them a bit (grpc_tools generates python2 imports, instead of python3 🤷)
 
 

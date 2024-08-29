@@ -40,8 +40,8 @@ directory="dist"
 
 [tool.hatch.build.targets.sdist]
 include = [
-  "es_agent_client"
+  "elastic_agent_client"
 ]
 exclude = [
-  "es_agent_client/examples"
+  "elastic_agent_client/examples"
 ]

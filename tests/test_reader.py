@@ -3,10 +3,10 @@ from unittest.mock import Mock, patch
 
 from pytest import fixture, mark
 
-import es_agent_client.generated.elastic_agent_client_pb2 as proto
-from es_agent_client.client import V2Options, VersionInfo
-from es_agent_client.reader import new_v2_from_reader
-from es_agent_client.util.logger import logger
+import elastic_agent_client.generated.elastic_agent_client_pb2 as proto
+from elastic_agent_client.client import V2Options, VersionInfo
+from elastic_agent_client.reader import new_v2_from_reader
+from elastic_agent_client.util.logger import logger
 
 
 @fixture

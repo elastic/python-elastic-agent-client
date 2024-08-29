@@ -148,16 +148,18 @@ class UnitExpected(_message.Message):
     def __init__(self, id: _Optional[str] = ..., type: _Optional[_Union[UnitType, str]] = ..., state: _Optional[_Union[State, str]] = ..., config_state_idx: _Optional[int] = ..., config: _Optional[_Union[UnitExpectedConfig, _Mapping]] = ..., log_level: _Optional[_Union[UnitLogLevel, str]] = ...) -> None: ...
 
 class AgentInfo(_message.Message):
-    __slots__ = ("id", "version", "snapshot", "mode")
+    __slots__ = ("id", "version", "snapshot", "mode", "Unprivileged")
     ID_FIELD_NUMBER: _ClassVar[int]
     VERSION_FIELD_NUMBER: _ClassVar[int]
     SNAPSHOT_FIELD_NUMBER: _ClassVar[int]
     MODE_FIELD_NUMBER: _ClassVar[int]
+    UNPRIVILEGED_FIELD_NUMBER: _ClassVar[int]
     id: str
     version: str
     snapshot: bool
     mode: AgentManagedMode
-    def __init__(self, id: _Optional[str] = ..., version: _Optional[str] = ..., snapshot: bool = ..., mode: _Optional[_Union[AgentManagedMode, str]] = ...) -> None: ...
+    Unprivileged: bool
+    def __init__(self, id: _Optional[str] = ..., version: _Optional[str] = ..., snapshot: bool = ..., mode: _Optional[_Union[AgentManagedMode, str]] = ..., Unprivileged: bool = ...) -> None: ...
 
 class Features(_message.Message):
     __slots__ = ("source", "fqdn")

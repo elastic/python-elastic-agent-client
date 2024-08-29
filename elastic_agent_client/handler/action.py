@@ -1,4 +1,4 @@
-import es_agent_client.generated.elastic_agent_client_pb2 as proto
+import elastic_agent_client.generated.elastic_agent_client_pb2 as proto
 
 
 class BaseActionHandler:

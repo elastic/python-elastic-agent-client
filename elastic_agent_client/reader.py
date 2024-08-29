@@ -1,9 +1,9 @@
 import grpc  # type: ignore
 
-import es_agent_client.generated.elastic_agent_client_pb2 as proto
-from es_agent_client.client import V2, V2Options
-from es_agent_client.generated.elastic_agent_client_pb2_grpc import ElasticAgentStub
-from es_agent_client.util.logger import logger
+import elastic_agent_client.generated.elastic_agent_client_pb2 as proto
+from elastic_agent_client.client import V2, V2Options
+from elastic_agent_client.generated.elastic_agent_client_pb2_grpc import ElasticAgentStub
+from elastic_agent_client.util.logger import logger
 
 
 def new_v2_from_reader(reader, ver, opts: V2Options):

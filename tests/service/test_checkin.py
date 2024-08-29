@@ -4,9 +4,9 @@ from unittest.mock import AsyncMock, Mock
 import pytest
 from google.protobuf.struct_pb2 import Struct
 
-import es_agent_client.generated.elastic_agent_client_pb2 as proto
-from es_agent_client.client import V2, Unit, VersionInfo
-from es_agent_client.service.checkin import CheckinV2Service
+import elastic_agent_client.generated.elastic_agent_client_pb2 as proto
+from elastic_agent_client.client import V2, Unit, VersionInfo
+from elastic_agent_client.service.checkin import CheckinV2Service
 
 
 @pytest.fixture

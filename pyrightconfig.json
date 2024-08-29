@@ -1,7 +1,7 @@
 {
   "pythonVersion": "3.10",
   "include": [
-    "es_agent_client"
+    "elastic_agent_client"
   ],
   "reportMissingImports": false,
   "reportMissingModuleSource": false,
