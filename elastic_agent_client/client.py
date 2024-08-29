@@ -1,12 +1,14 @@
 from typing import Optional
 
-import es_agent_client.generated.elastic_agent_client_pb2 as proto
-from es_agent_client.generated.elastic_agent_client_future_pb2_grpc import (
+import elastic_agent_client.generated.elastic_agent_client_pb2 as proto
+from elastic_agent_client.generated.elastic_agent_client_future_pb2_grpc import (
     ElasticAgentArtifact,
     ElasticAgentLog,
     ElasticAgentStore,
 )
-from es_agent_client.generated.elastic_agent_client_pb2_grpc import ElasticAgentStub
+from elastic_agent_client.generated.elastic_agent_client_pb2_grpc import (
+    ElasticAgentStub,
+)
 
 
 class VersionInfo:

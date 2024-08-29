@@ -1,4 +1,4 @@
-from es_agent_client.client import V2
+from elastic_agent_client.client import V2
 
 
 class BaseCheckinHandler:

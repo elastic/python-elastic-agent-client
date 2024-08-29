@@ -6,10 +6,10 @@ import warnings
 from . import elastic_agent_client_deprecated_pb2 as elastic__agent__client__deprecated__pb2
 from . import elastic_agent_client_pb2 as elastic__agent__client__pb2
 
-GRPC_GENERATED_VERSION = '1.64.1'
+GRPC_GENERATED_VERSION = '1.65.5'
 GRPC_VERSION = grpc.__version__
-EXPECTED_ERROR_RELEASE = '1.65.0'
-SCHEDULED_RELEASE_DATE = 'June 25, 2024'
+EXPECTED_ERROR_RELEASE = '1.66.0'
+SCHEDULED_RELEASE_DATE = 'August 6, 2024'
 _version_not_supported = False
 
 try:

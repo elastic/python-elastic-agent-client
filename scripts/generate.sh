@@ -3,9 +3,9 @@ set -x
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 source ${SCRIPT_DIR}/proto-common.sh
-GEN_PY_DIR="es_agent_client/generated"
+GEN_PY_DIR="elastic_agent_client/generated"
 
-rm es_agent_client/generated/elastic_agent*.py*
+rm elastic_agent_client/generated/elastic_agent*.py*
 
 bin/python -m grpc_tools.protoc \
   -I ${PROTO_DIR} \

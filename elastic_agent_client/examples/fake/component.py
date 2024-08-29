@@ -7,20 +7,20 @@ from typing import Optional
 
 from elasticsearch import AsyncElasticsearch
 
-from es_agent_client.client import V2, V2Options, VersionInfo
-from es_agent_client.generated import elastic_agent_client_pb2 as proto
-from es_agent_client.handler.action import BaseActionHandler
-from es_agent_client.handler.checkin import BaseCheckinHandler
-from es_agent_client.reader import new_v2_from_reader
-from es_agent_client.service.actions import ActionsService
-from es_agent_client.service.checkin import CheckinV2Service
-from es_agent_client.util.async_tools import (
+from elastic_agent_client.client import V2, V2Options, VersionInfo
+from elastic_agent_client.generated import elastic_agent_client_pb2 as proto
+from elastic_agent_client.handler.action import BaseActionHandler
+from elastic_agent_client.handler.checkin import BaseCheckinHandler
+from elastic_agent_client.reader import new_v2_from_reader
+from elastic_agent_client.service.actions import ActionsService
+from elastic_agent_client.service.checkin import CheckinV2Service
+from elastic_agent_client.util.async_tools import (
     BaseService,
     MultiService,
     get_event_loop,
     sleeps_for_retryable,
 )
-from es_agent_client.util.logger import logger
+from elastic_agent_client.util.logger import logger
 
 FAKE = "fake"
 

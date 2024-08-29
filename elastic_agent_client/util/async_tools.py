@@ -1,7 +1,7 @@
 import asyncio
 import time
 
-from es_agent_client.util.logger import logger
+from elastic_agent_client.util.logger import logger
 
 
 class CancellableSleeps:

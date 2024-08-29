@@ -2,11 +2,11 @@ import asyncio
 import functools
 from asyncio import sleep
 
-import es_agent_client.generated.elastic_agent_client_pb2 as proto
-from es_agent_client.client import V2
-from es_agent_client.handler.checkin import BaseCheckinHandler
-from es_agent_client.util.async_tools import AsyncQueueIterator, BaseService
-from es_agent_client.util.logger import logger
+import elastic_agent_client.generated.elastic_agent_client_pb2 as proto
+from elastic_agent_client.client import V2
+from elastic_agent_client.handler.checkin import BaseCheckinHandler
+from elastic_agent_client.util.async_tools import AsyncQueueIterator, BaseService
+from elastic_agent_client.util.logger import logger
 
 
 class CheckinV2Service(BaseService):
