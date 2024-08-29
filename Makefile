@@ -8,6 +8,10 @@ bin/python:
 	$(PYTHON) -m venv .
 	bin/pip install --upgrade pip
 
+bin/hatch: bin/python
+	bin/pip install hatch
+
+
 dev: bin/python
 	bin/pip install -r requirements.txt
 
@@ -17,6 +21,9 @@ generate: bin/python dev
 
 install: bin/python
 	bin/pip install -e .
+
+build: install bin/hatch
+	bin/hatch build
 
 lint: dev
 	bin/mypy -p es_agent_client
