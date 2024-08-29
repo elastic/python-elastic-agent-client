@@ -1,6 +1,6 @@
 grpcio==1.66.1
 grpcio-tools==1.65.5
-protobuf==5.27.3
+protobuf==5.28.0
 uvloop==0.20.0
 elasticsearch[async]==8.15.0
 black==24.8.0
