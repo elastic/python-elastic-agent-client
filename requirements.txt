@@ -6,7 +6,7 @@ elasticsearch[async]==8.15.0
 ruff==0.6.3
 pytest==7.4.4
 pytest-cov==4.1.0
-pytest-asyncio==0.23.8
+pytest-asyncio==0.24.0
 pytest-mock==3.14.0
 pytest-randomly==3.15.0
 pytest-fail-slow==0.6.0
