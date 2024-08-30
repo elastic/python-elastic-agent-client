@@ -19,8 +19,9 @@ generate: bin/python dev
 	./scripts/download-proto.sh
 	./scripts/generate.sh
 
-install: bin/python
+install: bin/python dev
 	bin/pip install -e .
+	bin/pip-licenses --format=plain-vertical --with-license-file --no-license-path > NOTICE.txt
 
 build: install bin/hatch
 	bin/hatch build
