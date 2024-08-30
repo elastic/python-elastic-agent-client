@@ -13,3 +13,4 @@ pytest-fail-slow==0.6.0
 pyright==1.1.378
 mypy==1.11.2
 types-protobuf==5.27.0.20240626
+pip-licenses==5.0.0
