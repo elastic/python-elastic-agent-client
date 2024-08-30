@@ -14,6 +14,11 @@ bin/hatch: bin/python
 
 dev: bin/python
 	bin/pip install -r requirements.txt
+	echo "python-elastic-agent-client" > NOTICE.txt
+	echo "Copyright 2024 Elasticsearch B.V." >> NOTICE.txt
+	echo "" >> NOTICE.txt
+	bin/pip-licenses >> NOTICE.txt
+
 
 generate: bin/python dev
 	./scripts/download-proto.sh
@@ -21,7 +26,6 @@ generate: bin/python dev
 
 install: bin/python dev
 	bin/pip install -e .
-	bin/pip-licenses --format=plain-vertical --with-license-file --no-license-path > NOTICE.txt
 
 build: install bin/hatch
 	bin/hatch build
