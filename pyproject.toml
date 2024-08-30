@@ -7,7 +7,7 @@ readme = "README.md"
 authors = [
     { name = "Search Extract and Transform Team", email = "enterprise-search-ingestion-team@elastic.co" }
 ]
-license = {file = "LICENSE"}
+license = {text = "Elastic V2"}
 
 classifiers = [
     "Programming Language :: Python",
@@ -28,11 +28,27 @@ dependencies = [
     "uvloop>=0.20, <1"
 ]
 
+
 [build-system]
 requires = [
-  "hatchling"
+  "hatchling",
+  "hatch-build-scripts"
 ]
 build-backend = "hatchling.build"
+
+[tool.pip-licenses]
+partial-match = true
+allow-only = "MIT;BSD;Apache"
+format = "plain-vertical"
+with-license-file = true
+no-license-path = true
+packages= [
+    "grpcio",
+    "grpcio-tools",
+    "protobuf",
+    "types-protobuf",
+    "uvloop"
+]
 
 [tool.hatch.build]
 dev-mode-dirs = ["."]
@@ -45,3 +61,6 @@ include = [
 exclude = [
   "elastic_agent_client/examples"
 ]
+
+[tool.hatch.build.targets.sdist.force-include]
+"NOTICE.txt" = "NOTICE.txt"
