@@ -20,6 +20,12 @@ classifiers = [
 ]
 
 requires-python = ">=3.10"
+
+#######################
+# !!!! IMPORTANT !!!! #
+#######################
+# If you add a dependancy here you will need to add it below
+# to the [tools.pip-licenses].packages definition.
 dependencies = [
     "grpcio>=1.65, <2",
     "grpcio-tools>=1.65, <2",
@@ -42,7 +48,8 @@ allow-only = "MIT;BSD;Apache"
 format = "plain-vertical"
 with-license-file = true
 no-license-path = true
-packages= [
+#### Make sure this list matches dependencies above
+packages=[
     "grpcio",
     "grpcio-tools",
     "protobuf",
