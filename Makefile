@@ -32,18 +32,12 @@ build: install bin/hatch
 
 lint: dev
 	bin/mypy -p elastic_agent_client
-	bin/ruff check elastic_agent_client
-	bin/ruff format elastic_agent_client --check
-	bin/ruff check tests
-	bin/ruff format tests --check
-	bin/pyright elastic_agent_client
-	bin/pyright tests
+	bin/ruff check
+	bin/ruff format --check
 
 autoformat: dev
-	bin/ruff check elastic_agent_client --fix
-	bin/ruff format elastic_agent_client
-	bin/ruff check tests --fix
-	bin/ruff format tests
+	bin/ruff check --fix
+	bin/ruff format
 
 test: dev install
 	bin/pytest --cov-report term-missing --cov-fail-under $(COVERAGE_THRESHOLD) --cov-report html --cov=elastic_agent_client --fail-slow=$(SLOW_TEST_THRESHOLD) -sv tests
