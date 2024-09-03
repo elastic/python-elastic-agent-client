@@ -1,21 +1,22 @@
-select = ["A", "ASYNC", "I", "E", "F", "B", "C4", "T10", "T20", "EM", "ISC", "S"]
-ignore = ["E501"]
+target-version = "py310"
+extend-exclude = [
+    "generated"
+]
+
+[lint]
+select = ["A", "ASYNC", "I", "E", "F", "B", "C4", "T10", "T20", "EM", "ISC", "S", "CPY001"]
+ignore = ["E501", "ISC001"]
+preview = true
 # Allow autofix for all enabled rules (when `--fix`) is provided.
 fixable = ["ALL"]
 unfixable = []
-exclude = [
-    ".git",
-    "__pycache__",
-    "lib",
-    "bin",
-    "include",
-    "generated"
-]
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
-target-version = "py310"
 
-[isort]
+[lint.isort]
 known-first-party=["es_agent_client"]
 
-[per-file-ignores]
+[lint.per-file-ignores]
 "tests/*" = ["B017", "S101", "S"]
+
+[lint.flake8-copyright]
+notice-rgx = "#\n# Copyright Elasticsearch B.V. and/or licensed to Elasticsearch B.V. under one\n# or more contributor license agreements. Licensed under the Elastic License 2.0;\n# you may not use this file except in compliance with the Elastic License 2.0.\n#"
