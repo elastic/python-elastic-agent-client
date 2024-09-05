@@ -29,8 +29,8 @@ requires-python = ">=3.10"
 dependencies = [
     "grpcio>=1.65, <2",
     "grpcio-tools>=1.65, <2",
-    "protobuf>=5.27, <6",
-    "types-protobuf>=5.27, <6",
+    "protobuf>=5.27, <5.28",
+    "types-protobuf>=5.27, <5.28",
     "uvloop>=0.20, <1"
 ]
 
