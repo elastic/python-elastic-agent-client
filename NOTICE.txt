@@ -622,7 +622,7 @@ Apache Software License
 UNKNOWN
 
 protobuf
-5.28.0
+5.27.4
 3-Clause BSD License
 Copyright 2008 Google Inc.  All rights reserved.
 
