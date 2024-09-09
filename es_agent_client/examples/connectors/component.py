@@ -3,6 +3,7 @@ import asyncio
 import functools
 import signal
 import sys
+import base64
 
 from es_agent_client.client import V2, V2Options, VersionInfo
 from es_agent_client.generated import elastic_agent_client_pb2 as proto
@@ -19,7 +20,10 @@ from es_agent_client.util.async_tools import (
 )
 from es_agent_client.util.logger import logger
 
-from connectors import service_cli
+from connectors.services.base import (
+    get_services,
+)
+from connectors.config import add_defaults
 
 CONNECTOR_SERVICE = "connector-service"
 
@@ -73,19 +77,16 @@ class ConnectorServiceManager(BaseService):
         try:
             # stop services tied to multiservice just in case
             await self._stop_services()
-
-            self.connector_services = service_cli.get_connector_services(
-                self.config, log_level="INFO"
+            self._multi_service = get_services(
+                ["schedule", "sync_content", "sync_access_control", "cleanup"],
+                dict(add_defaults(self.config)),
             )
-            self._multi_service = MultiService(*self.connector_services)
         except Exception as e:
             logger.exception(f"Error setting up connectors: {e}")
             raise
 
     def stop(self):
         super().stop()
-        for connector in self.connector_services:
-            connector.stop()
 
     async def update_config(self, new_config):
         self.config = new_config
@@ -96,13 +97,8 @@ class ConnectorServiceManager(BaseService):
         self._multi_service.shutdown(signal_name)
 
     async def _stop_services(self):
-        try:
-            for connector in self.connector_services:
-                connector.stop()
-            self.connector_services.clear()
-        except Exception as e:
-            logger.exception(f"Error stopping connector services: {e}")
-            raise
+        if self._multi_service:
+            self._multi_service.shutdown(None)
 
 
 class ConnectorCheckinHandler(BaseCheckinHandler):
@@ -135,6 +131,7 @@ class ConnectorCheckinHandler(BaseCheckinHandler):
                     or source.fields.get("username")
                     and source.fields.get("password")
                 ):
+
                     logger.info("updating connector service manager config")
 
                     es_creds = {
@@ -142,7 +139,12 @@ class ConnectorCheckinHandler(BaseCheckinHandler):
                     }
 
                     if source.fields.get("api_key"):
-                        es_creds["api_key"] = source["api_key"]
+                        api_key = source["api_key"]
+                        # if beats_logstash_format
+                        if ":" in api_key:
+                            api_key = base64.b64encode(api_key.encode()).decode()
+
+                        es_creds["api_key"] = api_key
                     elif source.fields.get("username") and source.fields.get(
                         "password"
                     ):
@@ -179,9 +181,14 @@ class ConnectorCheckinHandler(BaseCheckinHandler):
                         "zoom",
                     ]
 
+                    logger.info(es_creds)
+
                     new_config = {
                         "elasticsearch": es_creds,
                         "_force_allow_native": True,
+                        "service": {
+                            "_use_native_connector_api_keys": False,
+                        },
                         "native_service_types": native_services,
                     }
                     # this restarts all connector services
@@ -202,7 +209,9 @@ def main():
 
 def run():
     ver = VersionInfo(name=CONNECTOR_SERVICE, meta={"input": CONNECTOR_SERVICE})
+    logger.info(f"Starting {ver.name} with input: {ver.meta['input']}")
     opts = V2Options()
+    logger.info("Starting the loop")
     run_loop(sys.stdin.buffer, ver, opts)
 
 
@@ -221,7 +230,11 @@ def run_loop(buffer, ver, opts):
 async def _start_service(loop, buffer, ver, opts):
     client = new_v2_from_reader(buffer, ver, opts)
     action_handler = ConnectorActionHandler()
-    connector_service_manager = ConnectorServiceManager(client, {})
+    connector_service_manager = ConnectorServiceManager(
+        client,
+        {},
+    )
+
     checkin_handler = ConnectorCheckinHandler(client, connector_service_manager)
     multi_service = MultiService(
         CheckinV2Service(client, checkin_handler),

@@ -43,14 +43,14 @@ clean:
 	rm -rf bin lib include .proto
 
 docker-build:
-	docker build -t python-test-agent .
+	docker build --no-cache -t python-test-agent .
 
 docker-run:
 	docker run \
 		--env ELASTICSEARCH_HOSTS=$(ES_HOSTS) \
 		--env ELASTICSEARCH_USERNAME=$(ES_USERNAME) \
 		--env ELASTICSEARCH_PASSWORD=$(ES_PASSWORD) \
-		--network="host" \
+		--network host \
 		python-test-agent
 
 docker-all: docker-build docker-run
