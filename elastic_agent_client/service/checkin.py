@@ -11,7 +11,7 @@ import elastic_agent_client.generated.elastic_agent_client_pb2 as proto
 from elastic_agent_client.client import V2
 from elastic_agent_client.handler.checkin import BaseCheckinHandler
 from elastic_agent_client.util.async_tools import AsyncQueueIterator, BaseService
-from elastic_agent_client.util.logger import logger
+from elastic_agent_client.util.logger import logger, set_logger
 
 
 class CheckinV2Service(BaseService):
@@ -93,7 +93,33 @@ class CheckinV2Service(BaseService):
         self.client.sync_component(checkin)
         self.client.sync_units(checkin)
         logger.debug("Calling apply_from_client with new units")
+        self.pre_process_units()
         await self.checkin_handler.apply_from_client()
+
+    def pre_process_units(self):
+        logger.info("Pre-processing units")
+        if self.client.units is None:
+            logger.info("No units")
+            return
+
+        outputs = [
+            unit
+            for unit in self.client.units
+            if unit.unit_type == proto.UnitType.OUTPUT
+        ]
+
+        if len(outputs):
+            logger.info("Found outputs")
+            unit = outputs[0]
+
+            log_level = unit.log_level
+            if log_level:
+                logger.info("Found log level")
+                set_logger(log_level=log_level)
+            else:
+                logger.info("No log level")
+        else:
+            logger.info("No outputs")
 
     async def do_checkin(self, send_queue):
         if self.client.units is None:
