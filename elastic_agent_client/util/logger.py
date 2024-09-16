@@ -11,8 +11,6 @@ import logging
 
 import ecs_logging
 
-from functools import cached_property
-
 
 class ExtraLogger(logging.Logger):
     def _log(

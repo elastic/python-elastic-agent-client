@@ -20,11 +20,12 @@ class CheckinV2Service(BaseService):
 
     def __init__(self, client: V2, checkin_handler: BaseCheckinHandler):
         super().__init__(client, "checkinV2")
-        logger.info("Initializing the checkin service")
+        logger.debug(f"Initializing the {self.name} service")
         self.client = client
         self.checkin_handler = checkin_handler
 
     async def _run(self):
+        logger.info(f"Starting {self.name} service")
         if self.client.client is None:
             msg = "gRPC client is not yet set"
             raise RuntimeError(msg)
@@ -41,6 +42,7 @@ class CheckinV2Service(BaseService):
         receive_checkins_task.add_done_callback(functools.partial(self._callback))
 
         try:
+            logger.debug(f"Running {self.name} service loop")
             await asyncio.wait([send_checkins_task, receive_checkins_task])
         except Exception:
             send_checkins_task.cancel()
@@ -55,9 +57,9 @@ class CheckinV2Service(BaseService):
 
     async def receive_checkins(self, checkin_stream):
         checkin: proto.CheckinExpected
-        logger.info("Listening for checkin events...")
+        logger.info(f"{self.name} service is listening for check-in events")
         async for checkin in checkin_stream:
-            logger.info("Received a checkin event from CheckinV2")
+            logger.debug(f"Received a check-in event from {self.name}")
             await self.apply_expected(checkin)
             await sleep(0)
 
@@ -79,10 +81,10 @@ class CheckinV2Service(BaseService):
                     break
 
             if not change_detected:
-                logger.info("no change detected")
+                logger.debug("No change detected")
                 return
 
-        logger.info("applying CheckinExpected")
+        logger.debug("Detected change in units")
         self.client.agent_info = proto.AgentInfo(
             id=checkin.agent_info.id,
             version=checkin.agent_info.version,
@@ -90,12 +92,13 @@ class CheckinV2Service(BaseService):
         )
         self.client.sync_component(checkin)
         self.client.sync_units(checkin)
+        logger.debug("Calling apply_from_client with new units")
         await self.checkin_handler.apply_from_client()
 
     async def do_checkin(self, send_queue):
         if self.client.units is None:
             return
-        logger.info("Checking in....")
+        logger.debug("Doing a check-in")
         units_observed = [unit.to_observed() for unit in self.client.units]
 
         if not self.client.version_info_sent and self.client.version_info:
