@@ -13,3 +13,4 @@ pytest-fail-slow==0.6.0
 mypy==1.11.2
 types-protobuf==5.27.0.20240907
 pip-licenses==5.0.0
+ecs-logging==2.0.0

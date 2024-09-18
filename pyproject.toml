@@ -31,7 +31,8 @@ dependencies = [
     "grpcio-tools>=1.65, <2",
     "protobuf>=5.27, <5.28",
     "types-protobuf>=5.27, <5.28",
-    "uvloop>=0.20, <1"
+    "uvloop>=0.20, <1",
+    "ecs-logging>=2"
 ]
 
 
