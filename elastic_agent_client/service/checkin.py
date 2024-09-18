@@ -97,9 +97,9 @@ class CheckinV2Service(BaseService):
         await self.checkin_handler.apply_from_client()
 
     def pre_process_units(self):
-        logger.info("Pre-processing units")
+        logger.debug("Pre-processing units")
         if self.client.units is None:
-            logger.info("No units")
+            logger.debug("No units found")
             return
 
         outputs = [
@@ -109,17 +109,16 @@ class CheckinV2Service(BaseService):
         ]
 
         if len(outputs):
-            logger.info("Found outputs")
             unit = outputs[0]
 
             log_level = unit.log_level
             if log_level:
-                logger.info("Found log level")
+                logger.info(f"Updating log level to {log_level}")
                 set_logger(log_level=log_level)
             else:
-                logger.info("No log level")
+                logger.debug("No log level found for the output unit")
         else:
-            logger.info("No outputs")
+            logger.info("No outputs found")
 
     async def do_checkin(self, send_queue):
         if self.client.units is None:
