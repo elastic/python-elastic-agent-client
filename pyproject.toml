@@ -55,7 +55,8 @@ packages=[
     "grpcio-tools",
     "protobuf",
     "types-protobuf",
-    "uvloop"
+    "uvloop",
+    "ecs-logging"
 ]
 
 [tool.hatch.build]
