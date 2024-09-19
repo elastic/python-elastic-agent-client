@@ -59,7 +59,7 @@ class CheckinV2Service(BaseService):
         checkin: proto.CheckinExpected
         logger.info(f"{self.name} service is listening for check-in events")
         async for checkin in checkin_stream:
-            logger.debug(f"Received a check-in event from {self.name}")
+            logger.debug(f"Received a check-in event from CheckinV2 stream")
             await self.apply_expected(checkin)
             await sleep(0)
 
