@@ -11,7 +11,7 @@ import elastic_agent_client.generated.elastic_agent_client_pb2 as proto
 from elastic_agent_client.client import V2
 from elastic_agent_client.handler.checkin import BaseCheckinHandler
 from elastic_agent_client.util.async_tools import AsyncQueueIterator, BaseService
-from elastic_agent_client.util.logger import logger, set_logger
+from elastic_agent_client.util.logger import convert_agent_log_level, logger, set_logger
 
 
 class CheckinV2Service(BaseService):
@@ -113,8 +113,10 @@ class CheckinV2Service(BaseService):
 
             log_level = unit.log_level
             if log_level:
-                logger.info(f"Updating log level to {log_level}")
-                set_logger(log_level=log_level)
+                # Convert the UnitLogLevel to the corresponding Python logging level
+                python_log_level = convert_agent_log_level(log_level)
+                logger.info(f"Updating log level to {python_log_level}")
+                set_logger(log_level=python_log_level)
             else:
                 logger.debug("No log level found for the output unit")
         else:

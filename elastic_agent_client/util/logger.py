@@ -11,6 +11,8 @@ import logging
 
 import ecs_logging
 
+import elastic_agent_client.generated.elastic_agent_client_pb2 as proto
+
 
 class ExtraLogger(logging.Logger):
     def _log(
@@ -30,6 +32,28 @@ class ExtraLogger(logging.Logger):
         if extra is None:
             extra = {}
         super(ExtraLogger, self)._log(level, msg, args, exc_info, extra)
+
+
+def convert_agent_log_level(agent_log_level):
+    """
+    Maps a log level from the protobuf UnitLogLevel enum to a Python
+    logging level.
+
+    Since the UnitLogLevel enum doesn't directly map to Python's logging integer levels,
+    this function provides a manual mapping to convert between the two.
+
+    If an unknown log level is provided, the function defaults to logging.INFO.
+    """
+
+    agent_to_python_log_level = {
+        proto.UnitLogLevel.ERROR: logging.ERROR,
+        proto.UnitLogLevel.WARN: logging.WARNING,
+        proto.UnitLogLevel.INFO: logging.INFO,
+        proto.UnitLogLevel.DEBUG: logging.DEBUG,
+        proto.UnitLogLevel.TRACE: logging.DEBUG,
+    }
+
+    return agent_to_python_log_level.get(agent_log_level, logging.INFO)
 
 
 def set_logger(log_level=logging.INFO):
