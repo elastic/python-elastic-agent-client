@@ -251,6 +251,7 @@ async def test_apply_expected_when_no_change(
         Unit(
             unit_id=checkin_expected.units[0].id,
             config_idx=checkin_expected.units[0].config_state_idx,
+            log_level=checkin_expected.units[0].log_level,
         )
     ]  # same unit
     checkin_service = CheckinV2Service(v2_client, checkin_handler)
