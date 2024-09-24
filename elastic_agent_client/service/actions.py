@@ -5,6 +5,7 @@
 #
 import asyncio
 import json
+import logging
 
 from google.protobuf.json_format import MessageToJson
 
@@ -20,11 +21,12 @@ class ActionsService(BaseService):
 
     def __init__(self, client: V2, action_handler: BaseActionHandler):
         super().__init__(client, "actions")
-        logger.info("Initializing the actions service")
+        logger.debug(f"Initializing the {self.name} service")
         self.client = client
         self.action_handler = action_handler
 
     async def _run(self):
+        logger.debug(f"Initializing the {self.name} service")
         if self.client.client is None:
             msg = "gRPC client is not yet set"
             raise RuntimeError(msg)
@@ -40,13 +42,14 @@ class ActionsService(BaseService):
             )
         )
 
-        logger.info("Listening for action events...")
+        logger.info("Listening for action events")
         action: proto.ActionRequest
         async for action in action_stream:
-            action_str = json.dumps(
-                json.loads(MessageToJson(action))
-            )  # TODO, this is super inefficient and should be removed
-            logger.info(f"received a action event from actionV2: {action_str}")
+            if logger.isEnabledFor(logging.DEBUG):
+                action_str = json.dumps(
+                    json.loads(MessageToJson(action))
+                )  # TODO, this is super inefficient and should be removed
+                logger.debug(f"received a action event from actionV2: {action_str}")
             try:
                 await self.action_handler.handle_action(action)
             except Exception as e:
