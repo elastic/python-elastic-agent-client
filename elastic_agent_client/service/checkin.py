@@ -5,6 +5,7 @@
 #
 import asyncio
 import functools
+import logging
 from asyncio import sleep
 
 import elastic_agent_client.generated.elastic_agent_client_pb2 as proto
@@ -67,9 +68,12 @@ class CheckinV2Service(BaseService):
         if self.client.units and self.client.component_idx == checkin.component_idx:
             change_detected = False
             expected_units = [
-                (unit.id, unit.config_state_idx) for unit in checkin.units
+                (unit.id, unit.config_state_idx, unit.log_level)
+                for unit in checkin.units
             ]
-            current_units = [(unit.id, unit.config_idx) for unit in self.client.units]
+            current_units = [
+                (unit.id, unit.config_idx, unit.log_level) for unit in self.client.units
+            ]
             for current_unit in current_units:
                 if current_unit not in expected_units:
                     change_detected = True
@@ -115,7 +119,9 @@ class CheckinV2Service(BaseService):
             if log_level:
                 # Convert the UnitLogLevel to the corresponding Python logging level
                 python_log_level = convert_agent_log_level(log_level)
-                logger.info(f"Updating log level to {python_log_level}")
+                logger.info(
+                    f"Updating log level to {logging.getLevelName(python_log_level)}"
+                )
                 set_logger(log_level=python_log_level)
             else:
                 logger.debug("No log level found for the output unit")
