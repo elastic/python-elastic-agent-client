@@ -13,6 +13,14 @@ import ecs_logging
 
 import elastic_agent_client.generated.elastic_agent_client_pb2 as proto
 
+AGENT_PROTOCOL_TO_PYTHON_LOG_LEVEL = {
+    proto.UnitLogLevel.ERROR: logging.ERROR,
+    proto.UnitLogLevel.WARN: logging.WARNING,
+    proto.UnitLogLevel.INFO: logging.INFO,
+    proto.UnitLogLevel.DEBUG: logging.DEBUG,
+    proto.UnitLogLevel.TRACE: logging.DEBUG,
+}
+
 
 class ExtraLogger(logging.Logger):
     def _log(
@@ -45,15 +53,7 @@ def convert_agent_log_level(agent_log_level):
     If an unknown log level is provided, the function defaults to logging.INFO.
     """
 
-    agent_to_python_log_level = {
-        proto.UnitLogLevel.ERROR: logging.ERROR,
-        proto.UnitLogLevel.WARN: logging.WARNING,
-        proto.UnitLogLevel.INFO: logging.INFO,
-        proto.UnitLogLevel.DEBUG: logging.DEBUG,
-        proto.UnitLogLevel.TRACE: logging.DEBUG,
-    }
-
-    return agent_to_python_log_level.get(agent_log_level, logging.INFO)
+    return AGENT_PROTOCOL_TO_PYTHON_LOG_LEVEL.get(agent_log_level, logging.INFO)
 
 
 def set_logger(log_level=logging.INFO):
