@@ -27,7 +27,7 @@ from elastic_agent_client.util.async_tools import (
 )
 from elastic_agent_client.util.logger import logger
 
-FAKE = "fake"
+FAKE = "fake-test"
 
 
 class FakeActionHandler(BaseActionHandler):
