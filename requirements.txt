@@ -3,7 +3,7 @@ grpcio-tools==1.67.0
 protobuf==5.27.4
 uvloop==0.21.0
 elasticsearch[async]==8.15.1
-ruff==0.6.9
+ruff==0.7.0
 pytest==8.3.3
 pytest-cov==4.1.0
 pytest-asyncio==0.24.0
