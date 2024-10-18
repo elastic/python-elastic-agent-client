@@ -354,25 +354,18 @@ async def test_receive_checkins_run_while_service_is_running(
             [call(signal_1), call(signal_2), call(signal_3)]
         )
 
+
 @pytest.mark.asyncio
-async def test_stop_successfully_stops_service(
-    v2_client, checkin_handler
-):
+async def test_stop_successfully_stops_service(v2_client, checkin_handler):
     checkin_service = CheckinV2Service(v2_client, checkin_handler)
-    checkin_service.CHECKIN_INTERVAL=0.1
+    checkin_service.CHECKIN_INTERVAL = 0.1
 
     async def _stop_checkin_service(*args, **kwargs):
         await asyncio.sleep(0.25)
         checkin_service.stop()
 
     with (
-        mock.patch.object(
-            checkin_service, "do_checkin", AsyncMock()
-        ) as patched_do_checkin,
-        mock.patch.object(
-            checkin_service, "apply_expected", AsyncMock()
-        ) as patched_apply_expected,
+        mock.patch.object(checkin_service, "do_checkin", AsyncMock()),
+        mock.patch.object(checkin_service, "apply_expected", AsyncMock()),
     ):
-        await asyncio.gather(
-            _stop_checkin_service(), checkin_service.run()
-        )
+        await asyncio.gather(_stop_checkin_service(), checkin_service.run())
