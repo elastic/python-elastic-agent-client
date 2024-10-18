@@ -40,7 +40,7 @@ autoformat: dev
 	bin/ruff format
 
 test: dev install
-	bin/pytest --cov-report term-missing --cov-fail-under $(COVERAGE_THRESHOLD) --cov-report html --cov=elastic_agent_client --fail-slow=$(SLOW_TEST_THRESHOLD) -sv tests
+	bin/pytest --cov-config=pyproject.toml --cov=. --fail-slow=$(SLOW_TEST_THRESHOLD) -sv tests
 
 clean:
 	rm -rf bin lib include .proto

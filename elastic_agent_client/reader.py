@@ -25,7 +25,7 @@ def new_v2_from_reader(reader, ver, opts: V2Options):
             mode=info.agent_info.mode,
         )
 
-    if info.services is None:
+    if info.services is None or len(info.services) == 0:
         msg = "No supported services detected"
         raise RuntimeError(msg)
 

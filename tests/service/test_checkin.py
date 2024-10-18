@@ -4,7 +4,8 @@
 # you may not use this file except in compliance with the Elastic License 2.0.
 #
 import asyncio
-from unittest.mock import AsyncMock, Mock
+from unittest import mock
+from unittest.mock import AsyncMock, Mock, call
 
 import pytest
 from google.protobuf.struct_pb2 import Struct
@@ -12,6 +13,7 @@ from google.protobuf.struct_pb2 import Struct
 import elastic_agent_client.generated.elastic_agent_client_pb2 as proto
 from elastic_agent_client.client import V2, Unit, VersionInfo
 from elastic_agent_client.service.checkin import CheckinV2Service
+from elastic_agent_client.util.async_tools import AsyncIterator, AsyncQueueIterator
 
 
 @pytest.fixture
@@ -25,7 +27,7 @@ def checkin_handler():
 def v2_client():
     v2_client = V2()
     v2_client.client = Mock()
-    v2_client.client.CheckinV2 = Mock()
+    v2_client.client.CheckinV2 = Mock(return_value=AsyncQueueIterator(asyncio.Queue()))
     v2_client.sync_component = Mock()
     v2_client.sync_units = Mock()
     return v2_client
@@ -105,7 +107,7 @@ def additional_unit():
 
 
 @pytest.mark.asyncio
-async def test_error_on_unset_stub(checkin_handler):
+async def test_run_error_on_unset_stub(checkin_handler):
     client = V2()  # not using the fixture
     with pytest.raises(RuntimeError):
         checkin_service = CheckinV2Service(client, checkin_handler)
@@ -161,7 +163,7 @@ async def test_apply_expected_on_empty(v2_client, checkin_handler, checkin_expec
 
 
 @pytest.mark.asyncio
-async def test_appy_expected_on_changed_component(
+async def test_apply_expected_on_changed_component(
     v2_client, checkin_handler, checkin_expected
 ):
     v2_client.component_idx = checkin_expected.component_idx - 1  # different component
@@ -181,7 +183,7 @@ async def test_appy_expected_on_changed_component(
 
 
 @pytest.mark.asyncio
-async def test_appy_expected_on_changed_unit(
+async def test_apply_expected_on_changed_unit(
     v2_client, checkin_handler, checkin_expected
 ):
     v2_client.component_idx = checkin_expected.component_idx  # same component
@@ -201,7 +203,7 @@ async def test_appy_expected_on_changed_unit(
 
 
 @pytest.mark.asyncio
-async def test_appy_expected_on_added_unit(
+async def test_apply_expected_on_added_unit(
     v2_client, checkin_handler, checkin_expected, additional_unit
 ):
     v2_client.component_idx = checkin_expected.component_idx  # same component
@@ -222,7 +224,7 @@ async def test_appy_expected_on_added_unit(
 
 
 @pytest.mark.asyncio
-async def test_appy_expected_on_removed_unit(
+async def test_apply_expected_on_removed_unit(
     v2_client, checkin_handler, checkin_expected
 ):
     v2_client.component_idx = checkin_expected.component_idx  # same component
@@ -261,3 +263,116 @@ async def test_apply_expected_when_no_change(
     v2_client.sync_component.assert_not_called()
     v2_client.sync_units.assert_not_called()
     checkin_handler.apply_from_client.assert_not_awaited()
+
+
+@pytest.mark.asyncio
+async def test_run_starts_tasks(v2_client, checkin_handler):
+    checkin_service = CheckinV2Service(v2_client, checkin_handler)
+
+    with (
+        mock.patch.object(
+            checkin_service, "send_checkins", AsyncMock()
+        ) as patched_send_checkins,
+        mock.patch.object(
+            checkin_service, "receive_checkins", AsyncMock()
+        ) as patched_receive_checkins,
+    ):
+        await checkin_service.run()
+
+        # We just verify that everything is called and awaited
+        patched_send_checkins.assert_awaited()
+        patched_receive_checkins.assert_awaited()
+
+
+@pytest.mark.asyncio
+async def test_run_cancels_tasks_if_any_errors_out(v2_client, checkin_handler):
+    checkin_service = CheckinV2Service(v2_client, checkin_handler)
+
+    with (
+        mock.patch.object(
+            checkin_service, "send_checkins", AsyncMock()
+        ) as patched_send_checkins,
+        mock.patch.object(
+            checkin_service, "receive_checkins", AsyncMock()
+        ) as patched_receive_checkins,
+    ):
+
+        async def _send_checkins(*args, **kwargs):
+            # Just being lazy here:
+            # We wanna make sure that this function is cancelled
+            # And never reaches the end of execution
+            await asyncio.sleep(60)
+
+        class ArbitraryException(Exception):
+            pass
+
+        patched_send_checkins.side_effect = _send_checkins
+        patched_receive_checkins.side_effect = ArbitraryException("Whoopsie")
+
+        with pytest.raises(ArbitraryException):
+            await checkin_service.run()
+
+
+@pytest.mark.asyncio
+async def test_send_checkins_run_while_service_is_running(v2_client, checkin_handler):
+    checkin_service = CheckinV2Service(v2_client, checkin_handler)
+    checkin_service.CHECKIN_INTERVAL = 0.1
+    checkin_service.running = True
+
+    async def _stop_checkin_service(*args, **kwargs):
+        await asyncio.sleep(0.25)
+        checkin_service.running = False
+
+    with mock.patch.object(
+        checkin_service, "do_checkin", AsyncMock()
+    ) as patched_do_checkin:
+        await asyncio.gather(
+            _stop_checkin_service(), checkin_service.send_checkins(asyncio.Queue())
+        )
+
+        patched_do_checkin.assert_awaited()
+
+
+@pytest.mark.asyncio
+async def test_receive_checkins_run_while_service_is_running(
+    v2_client, checkin_handler
+):
+    checkin_service = CheckinV2Service(v2_client, checkin_handler)
+    checkin_service.running = True
+
+    signal_1 = "1"
+    signal_2 = "2"
+    signal_3 = "3"
+    stream = AsyncIterator([signal_1, signal_2, signal_3])
+
+    with mock.patch.object(
+        checkin_service, "apply_expected", AsyncMock()
+    ) as patched_apply_expected:
+        await checkin_service.receive_checkins(stream)
+
+        patched_apply_expected.assert_has_calls(
+            [call(signal_1), call(signal_2), call(signal_3)]
+        )
+
+@pytest.mark.asyncio
+async def test_stop_successfully_stops_service(
+    v2_client, checkin_handler
+):
+    checkin_service = CheckinV2Service(v2_client, checkin_handler)
+    checkin_service.CHECKIN_INTERVAL=0.1
+
+    async def _stop_checkin_service(*args, **kwargs):
+        await asyncio.sleep(0.25)
+        checkin_service.stop()
+
+    with (
+        mock.patch.object(
+            checkin_service, "do_checkin", AsyncMock()
+        ) as patched_do_checkin,
+        mock.patch.object(
+            checkin_service, "apply_expected", AsyncMock()
+        ) as patched_apply_expected,
+    ):
+        await asyncio.gather(
+            _stop_checkin_service(), checkin_service.run()
+        )
