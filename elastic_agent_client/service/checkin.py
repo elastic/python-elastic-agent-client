@@ -7,6 +7,7 @@ import asyncio
 import functools
 import logging
 from asyncio import CancelledError, Task, sleep
+from typing import Any, Optional
 
 import elastic_agent_client.generated.elastic_agent_client_pb2 as proto
 from elastic_agent_client.client import V2
@@ -24,8 +25,8 @@ class CheckinV2Service(BaseService):
         logger.debug(f"Initializing the {self.name} service")
         self.client = client
         self.checkin_handler = checkin_handler
-        self._send_checkins_task: Task
-        self._receive_checkins_task: Task
+        self._send_checkins_task: Optional[Task[Any]] = None
+        self._receive_checkins_task: Optional[Task[Any]] = None
 
     def stop(self):
         super().stop()
