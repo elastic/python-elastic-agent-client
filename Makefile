@@ -1,7 +1,6 @@
 .PHONY: install
 
 PYTHON=python3.10
-COVERAGE_THRESHOLD=0 # percents
 SLOW_TEST_THRESHOLD=1 # seconds
 
 bin/python:
