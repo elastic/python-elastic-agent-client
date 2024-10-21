@@ -47,10 +47,10 @@ class ActionsService(BaseService):
         async for action in action_stream:
             if logger.isEnabledFor(logging.DEBUG):
                 action_str = MessageToDict(action)
-                logger.debug(f"received a action event from actionV2: {action_str}")
+                logger.debug(f"Received action event from actionV2: {action_str}")
             try:
                 await self.action_handler.handle_action(action)
-                logger.info(f"Successfully handled action {action_str}")
+                logger.debug(f"Successfully handled action {action_str}")
             except Exception as e:
                 logger.exception(f"Failed to do action: {action}", e)
                 await send_queue.put(
