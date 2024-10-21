@@ -89,7 +89,7 @@ class CheckinV2Service(BaseService):
         while self.running:
             if send_queue.empty():
                 await self.do_checkin(send_queue)
-            # To not sleep if not running any more
+            # Sleep if still running
             if self.running:
                 await sleep(self.CHECKIN_INTERVAL)
 
