@@ -2,12 +2,12 @@ python-elastic-agent-client
 Copyright 2024 Elasticsearch B.V.
 
 ecs-logging
-2.0.0
+2.2.0
 Apache Software License
 UNKNOWN
 
 grpcio
-1.66.1
+1.67.0
 Apache Software License
 
                                  Apache License
@@ -622,7 +622,7 @@ Exhibit B - "Incompatible With Secondary Licenses" Notice
 
 
 grpcio-tools
-1.66.1
+1.67.0
 Apache Software License
 UNKNOWN
 
@@ -669,7 +669,7 @@ Apache Software License
 UNKNOWN
 
 uvloop
-0.20.0
+0.21.0
 Apache Software License; MIT License
 Copyright (C) 2016-present the uvloop authors and contributors.
 
