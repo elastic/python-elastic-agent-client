@@ -7,7 +7,7 @@ import asyncio
 import json
 import logging
 
-from google.protobuf.json_format import MessageToJson
+from google.protobuf.json_format import MessageToDict
 
 import elastic_agent_client.generated.elastic_agent_client_pb2 as proto
 from elastic_agent_client.client import V2
@@ -46,12 +46,11 @@ class ActionsService(BaseService):
         action: proto.ActionRequest
         async for action in action_stream:
             if logger.isEnabledFor(logging.DEBUG):
-                action_str = json.dumps(
-                    json.loads(MessageToJson(action))
-                )  # TODO, this is super inefficient and should be removed
-                logger.debug(f"received a action event from actionV2: {action_str}")
+                action_str = MessageToDict(action)
+                logger.debug(f"Received action event from actionV2: {action_str}")
             try:
                 await self.action_handler.handle_action(action)
+                logger.debug(f"Successfully handled action {action_str}")
             except Exception as e:
                 logger.exception(f"Failed to do action: {action}", e)
                 await send_queue.put(

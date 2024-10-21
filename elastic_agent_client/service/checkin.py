@@ -6,7 +6,8 @@
 import asyncio
 import functools
 import logging
-from asyncio import sleep
+from asyncio import CancelledError, Task, sleep
+from typing import Any, Optional
 
 import elastic_agent_client.generated.elastic_agent_client_pb2 as proto
 from elastic_agent_client.client import V2
@@ -24,6 +25,17 @@ class CheckinV2Service(BaseService):
         logger.debug(f"Initializing the {self.name} service")
         self.client = client
         self.checkin_handler = checkin_handler
+        self._send_checkins_task: Optional[Task[Any]] = None
+        self._receive_checkins_task: Optional[Task[Any]] = None
+
+    def stop(self):
+        super().stop()
+        if self._send_checkins_task:
+            logger.info(f"Cancelling task: {self._send_checkins_task.get_name()}")
+            self._send_checkins_task.cancel()
+        if self._receive_checkins_task:
+            logger.info(f"Cancelling task: {self._receive_checkins_task.get_name()}")
+            self._receive_checkins_task.cancel()
 
     async def _run(self):
         logger.info(f"Starting {self.name} service")
@@ -42,19 +54,44 @@ class CheckinV2Service(BaseService):
         send_checkins_task.add_done_callback(functools.partial(self._callback))
         receive_checkins_task.add_done_callback(functools.partial(self._callback))
 
-        try:
-            logger.debug(f"Running {self.name} service loop")
-            await asyncio.wait([send_checkins_task, receive_checkins_task])
-        except Exception:
-            send_checkins_task.cancel()
-            receive_checkins_task.cancel()
-            raise
+        self._send_checkins_task = send_checkins_task
+        self._receive_checkins_task = receive_checkins_task
+
+        logger.debug(f"Running {self.name} service loop")
+        done, pending = await asyncio.wait(
+            [send_checkins_task, receive_checkins_task],
+            return_when=asyncio.FIRST_EXCEPTION,
+        )
+
+        for task in pending:
+            task.cancel()
+            try:
+                await task
+            except CancelledError:
+                logger.error("Task did not handle cancellation gracefully")
+
+        # Separated these two to log all errors if both tasks error out together
+        # Which is unlikely, but it's cheap to do it the way I did
+        for task in done:
+            if not task.cancelled() and task.exception():
+                logger.error(
+                    f"Task {task.get_name()} terminated due to exception:",
+                    exc_info=task.exception(),
+                )
+
+        for task in done:
+            if not task.cancelled():
+                task_exception = task.exception()
+                if task_exception:
+                    raise task_exception
 
     async def send_checkins(self, send_queue):
         while self.running:
             if send_queue.empty():
                 await self.do_checkin(send_queue)
-            await sleep(self.CHECKIN_INTERVAL)
+            # Sleep if still running
+            if self.running:
+                await sleep(self.CHECKIN_INTERVAL)
 
     async def receive_checkins(self, checkin_stream):
         checkin: proto.CheckinExpected
@@ -62,7 +99,6 @@ class CheckinV2Service(BaseService):
         async for checkin in checkin_stream:
             logger.debug("Received a check-in event from CheckinV2 stream")
             await self.apply_expected(checkin)
-            await sleep(0)
 
     async def apply_expected(self, checkin: proto.CheckinExpected):
         if self.client.units and self.client.component_idx == checkin.component_idx:

@@ -59,6 +59,21 @@ packages=[
     "ecs-logging"
 ]
 
+[tool.coverage.run]
+source = ['elastic_agent_client']
+omit = [
+#### Omit generated code
+    "*/generated/*",
+    "*/examples/*",
+    "*/tests/*",
+    ]
+
+[tool.coverage.report]
+fail_under=90
+format="text"
+precision=2
+show_missing=true
+
 [tool.hatch.build]
 dev-mode-dirs = ["."]
 directory="dist"
