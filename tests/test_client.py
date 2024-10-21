@@ -75,5 +75,7 @@ def checkin_expected():
 
 
 @pytest.mark.asyncio
-async def test_sync_units_updates_units_from_incoming_checkin_expected(v2_client, checkin_expected):
+async def test_sync_units_updates_units_from_incoming_checkin_expected(
+    v2_client, checkin_expected
+):
     v2_client.sync_units(checkin_expected)

@@ -44,18 +44,21 @@ class CheckinV2Service(BaseService):
         send_queue: asyncio.Queue = asyncio.Queue()
         checkin_stream = self.client.client.CheckinV2(AsyncQueueIterator(send_queue))
 
-        self._send_checkins_task = asyncio.create_task(
+        send_checkins_task = asyncio.create_task(
             self.send_checkins(send_queue), name="Checkin Writer"
         )
-        self._receive_checkins_task = asyncio.create_task(
+        receive_checkins_task = asyncio.create_task(
             self.receive_checkins(checkin_stream), name="Checkin Reader"
         )
-        self._send_checkins_task.add_done_callback(functools.partial(self._callback))
-        self._receive_checkins_task.add_done_callback(functools.partial(self._callback))
+        send_checkins_task.add_done_callback(functools.partial(self._callback))
+        receive_checkins_task.add_done_callback(functools.partial(self._callback))
+
+        self._send_checkins_task = send_checkins_task
+        self._receive_checkins_task = receive_checkins_task
 
         logger.debug(f"Running {self.name} service loop")
         done, pending = await asyncio.wait(
-            [self._send_checkins_task, self._receive_checkins_task],
+            [send_checkins_task, receive_checkins_task],
             return_when=asyncio.FIRST_EXCEPTION,
         )
 
