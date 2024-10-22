@@ -113,6 +113,7 @@ class V2:
         self.component_idx = checkin.component_idx
 
     def sync_units(self, checkin: proto.CheckinExpected):
+        print("GOT CHECKIN")
         print(checkin)
         if checkin.component:
             self.apm_config = checkin.component.apm_config
