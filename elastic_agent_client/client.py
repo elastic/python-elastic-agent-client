@@ -80,7 +80,7 @@ class Unit:
             config_state_idx=self.config_idx,
             state=self.state,
             message=self.state_msg,
-            payload=self.state_payload,
+            payload=self.state_payload
         )
 
 
@@ -113,6 +113,7 @@ class V2:
         self.component_idx = checkin.component_idx
 
     def sync_units(self, checkin: proto.CheckinExpected):
+        print(checkin)
         if checkin.component:
             self.apm_config = checkin.component.apm_config
         units = []
@@ -122,16 +123,17 @@ class V2:
             unit.unit_type = expected_unit.type
             unit.expected_state = expected_unit.state
             unit.log_level = expected_unit.log_level
-            unit.config = expected_unit.config
-            unit.config_idx = expected_unit.config_state_idx
-            unit.features = None  # TODO?
-            unit.features_idx = 0  # TODO?
-            unit.apm = None  # TODO?
-            unit.state = expected_unit.state
+            # These 3 go together
+            unit.config = expected_unit.config # 
+            unit.config_idx = expected_unit.config_state_idx # It's here to verify that the configuration we're applying are ordered correctly
+            unit.state = expected_unit.state # RUNNING = 0 or STOPPING = 1
             unit.state_msg = ""  # TODO?
             unit.state_payload = None  # TODO?
+            unit.features = None  # TODO: Not supported yet: part of Unit Features
+            unit.features_idx = 0  # TODO: Not supported yet: part of Unit Features
+            unit.apm = None  # TODO?
             unit.actions = None  # TODO?
+            unit.diag_hooks = {}  # TODO: Not supported yet: part of Diagnostic Hooks
             unit.client = self
-            unit.diag_hooks = {}  # TODO?
             units.append(unit)
         self.units = units
