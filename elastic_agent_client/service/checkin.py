@@ -94,6 +94,8 @@ class CheckinV2Service(BaseService):
             version=checkin.agent_info.version,
             snapshot=checkin.agent_info.snapshot,
         )
+        logger.debug("CHECKIN")
+        logger.debug(checkin)
         self.client.sync_component(checkin)
         self.client.sync_units(checkin)
         logger.debug("Calling apply_from_client with new units")
