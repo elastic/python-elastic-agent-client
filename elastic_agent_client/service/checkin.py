@@ -65,8 +65,6 @@ class CheckinV2Service(BaseService):
             await sleep(0)
 
     async def apply_expected(self, checkin: proto.CheckinExpected):
-        logger.debug("CHECKIN")
-        logger.debug(checkin)
         if self.client.units and self.client.component_idx == checkin.component_idx:
             change_detected = False
             expected_units = [

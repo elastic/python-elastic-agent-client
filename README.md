@@ -83,6 +83,12 @@ Instead, when `make generate` runs, it will:
 4. post-process them a bit (grpc_tools generates python2 imports, instead of python3 🤷)
 
 
+### Unsupported Features
+
+- APM
+- Diagnostic Hooks
+- Unit Features
+
 
 ### TODO List
 - [ ] remove all inline TODOs
