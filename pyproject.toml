@@ -1,6 +1,5 @@
 [project]
 name = "elastic_agent_client"
-version = "0.0.1.dev1"
 description = "A python implementation of an Elastic Agent Client"
 url = "https://github.com/elastic/python-elastic-agent-client"
 readme = "README.md"
@@ -77,6 +76,9 @@ show_missing=true
 [tool.hatch.build]
 dev-mode-dirs = ["."]
 directory="dist"
+
+[tool.hatch.version]
+path = "elastic_agent_client/version.py"
 
 [tool.hatch.build.targets.sdist]
 include = [
