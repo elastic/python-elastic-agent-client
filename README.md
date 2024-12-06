@@ -86,12 +86,6 @@ Instead, when `make generate` runs, it will:
 
 ### TODO List
 - [ ] remove all inline TODOs
-- [ ] write tests
-- [ ] use ECS logging
-- [ ] add NOTICE file
-- [ ] push to pypi
-- [ ] open source
-- [ ] record a demo
 - [ ] write a blog
 - [ ] one day...
   - [ ] support "custom actions" to trigger a sync, test connection, etc
