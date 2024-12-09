@@ -7,9 +7,9 @@ bin/python:
 	$(PYTHON) -m venv .
 	bin/pip install --upgrade pip
 
-bin/hatch: bin/python
-	bin/pip install hatch
+bin/hatch: dev
 
+bin/twine: dev
 
 dev: bin/python
 	bin/pip install -r requirements.txt
@@ -26,8 +26,14 @@ generate: bin/python dev
 install: bin/python dev
 	bin/pip install -e .
 
-build: install bin/hatch
+build: install bin/hatch bin/twine
 	bin/hatch build
+
+test-release: build
+	bin/twine upload -r testpypi dist/*
+
+release: clean build
+	bin/twine upload dist/*
 
 lint: dev
 	bin/mypy -p elastic_agent_client
@@ -42,4 +48,4 @@ test: dev install
 	bin/pytest --cov-config=pyproject.toml --cov=. --fail-slow=$(SLOW_TEST_THRESHOLD) -sv tests
 
 clean:
-	rm -rf bin lib include .proto
+	rm -rf bin lib include .proto dist
