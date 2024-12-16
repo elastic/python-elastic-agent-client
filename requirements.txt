@@ -2,7 +2,7 @@ grpcio==1.68.1
 grpcio-tools==1.68.1
 protobuf==5.27.4
 uvloop==0.21.0
-elasticsearch[async]==8.16.0
+elasticsearch[async]==8.17.0
 ecs-logging==2.2.0
 
 ruff==0.8.3
