@@ -186,20 +186,22 @@ class ElasticAPMTLS(_message.Message):
     def __init__(self, skip_verify: bool = ..., server_cert: _Optional[str] = ..., server_ca: _Optional[str] = ...) -> None: ...
 
 class ElasticAPM(_message.Message):
-    __slots__ = ("tls", "environment", "api_key", "secret_token", "hosts", "global_labels")
+    __slots__ = ("tls", "environment", "api_key", "secret_token", "hosts", "global_labels", "sampling_rate")
     TLS_FIELD_NUMBER: _ClassVar[int]
     ENVIRONMENT_FIELD_NUMBER: _ClassVar[int]
     API_KEY_FIELD_NUMBER: _ClassVar[int]
     SECRET_TOKEN_FIELD_NUMBER: _ClassVar[int]
     HOSTS_FIELD_NUMBER: _ClassVar[int]
     GLOBAL_LABELS_FIELD_NUMBER: _ClassVar[int]
+    SAMPLING_RATE_FIELD_NUMBER: _ClassVar[int]
     tls: ElasticAPMTLS
     environment: str
     api_key: str
     secret_token: str
     hosts: _containers.RepeatedScalarFieldContainer[str]
     global_labels: str
-    def __init__(self, tls: _Optional[_Union[ElasticAPMTLS, _Mapping]] = ..., environment: _Optional[str] = ..., api_key: _Optional[str] = ..., secret_token: _Optional[str] = ..., hosts: _Optional[_Iterable[str]] = ..., global_labels: _Optional[str] = ...) -> None: ...
+    sampling_rate: float
+    def __init__(self, tls: _Optional[_Union[ElasticAPMTLS, _Mapping]] = ..., environment: _Optional[str] = ..., api_key: _Optional[str] = ..., secret_token: _Optional[str] = ..., hosts: _Optional[_Iterable[str]] = ..., global_labels: _Optional[str] = ..., sampling_rate: _Optional[float] = ...) -> None: ...
 
 class APMConfig(_message.Message):
     __slots__ = ("elastic",)
