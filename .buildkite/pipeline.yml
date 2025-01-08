@@ -4,19 +4,19 @@ agents:
 
 steps:
   - label: ":proto: Check proto files"
-    command: ".buildkite/scripts/run_proto_check.sh"
+    command: ".buildkite/script/run_proto_check.sh"
     timeout_in_minutes: 5
 
   - wait
 
   - label: ":eyes: Check notice file"
-    command: ".buildkite/scripts/run_notice_check.sh"
+    command: ".buildkite/script/run_notice_check.sh"
     timeout_in_minutes: 5
 
   - wait
 
   - label: ":face_with_peeking_eye: Lint"
-    command: ".buildkite/scripts/run_linter_check.sh"
+    command: ".buildkite/script/run_linter_check.sh"
     timeout_in_minutes: 5
 
   - label: ":pytest: Test"

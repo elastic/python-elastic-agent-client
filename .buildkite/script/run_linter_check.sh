@@ -3,8 +3,8 @@
 # !!! WARNING DO NOT add -x to avoid leaking vault passwords
 set -euo pipefail
 
-source .buildkite/scripts/shared.sh
-source .buildkite/scripts/git-setup.sh
+source .buildkite/script/shared.sh
+source .buildkite/script/git-setup.sh
 
 init_python
 
