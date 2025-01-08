@@ -1,6 +1,5 @@
 [project]
 name = "elastic_agent_client"
-version = "0.0.1"
 description = "A python implementation of an Elastic Agent Client"
 url = "https://github.com/elastic/python-elastic-agent-client"
 readme = "README.md"
@@ -18,6 +17,7 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "License :: Other/Proprietary License"
 ]
+dynamic = ["version"]
 
 requires-python = ">=3.10"
 
@@ -29,8 +29,8 @@ requires-python = ">=3.10"
 dependencies = [
     "grpcio>=1.65, <2",
     "grpcio-tools>=1.65, <2",
-    "protobuf>=5.27, <5.28",
-    "types-protobuf>=5.27, <5.28",
+    "protobuf>=5.28, <5.29",
+    "types-protobuf>=5.28, <5.29",
     "uvloop>=0.20, <1",
     "ecs-logging>=2"
 ]
@@ -77,6 +77,9 @@ show_missing=true
 [tool.hatch.build]
 dev-mode-dirs = ["."]
 directory="dist"
+
+[tool.hatch.version]
+path = "elastic_agent_client/version.py"
 
 [tool.hatch.build.targets.sdist]
 include = [
