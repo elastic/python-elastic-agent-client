@@ -2,7 +2,7 @@
   "jobs": [
     {
       "enabled": true,
-      "pipelineSlug": "python-elastic-agent-client",
+      "pipeline_slug": "python-elastic-agent-client",
       "allow_org_users": true,
       "allowed_repo_permissions": [
         "admin",
@@ -14,6 +14,8 @@
       ],
       "build_on_commit": false,
       "build_on_comment": true,
+      "set_commit_status": true,
+      "commit_status_context": "buildkite/python-elastic-agent-client",
       "trigger_comment_regex": "^(?:(?:buildkite\\W+)?(?:build|test)\\W+(?:this|it))",
       "always_trigger_comment_regex": "^(?:(?:buildkite\\W+)?(?:build|test)\\W+(?:this|it))",
       "skip_ci_labels": [
