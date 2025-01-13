@@ -5,7 +5,10 @@
 #
 #!/bin/bash
 set -x
-SCRIPT_DIR="scripts"
+
+if [ -z "$SCRIPT_DIR" ]; then
+  SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+fi
 
 source ${SCRIPT_DIR}/proto-common.sh
 GEN_PY_DIR="elastic_agent_client/generated"
