@@ -7,9 +7,29 @@
 set -x
 
 
-source ./scripts/proto-common.sh
+PROTO_DIR=".proto"
+ELASTIC_AGENT_CLIENT="elastic-agent-client"
+ELASTIC_AGENT_CLIENT_DEPRECATED="elastic-agent-client-deprecated"
+ELASTIC_AGENT_CLIENT_FUTURE="elastic-agent-client-future"
 GEN_PY_DIR="elastic_agent_client/generated"
 
+# Download
+PROTO_SRC="https://raw.githubusercontent.com/elastic/elastic-agent-client/main/${ELASTIC_AGENT_CLIENT}.proto"
+DEPRECATED_PROTO_SRC="https://raw.githubusercontent.com/elastic/elastic-agent-client/main/${ELASTIC_AGENT_CLIENT_DEPRECATED}.proto"
+FUTURE_PROTO_SRC="https://raw.githubusercontent.com/elastic/elastic-agent-client/main/${ELASTIC_AGENT_CLIENT_FUTURE}.proto"
+OUTPUT_FILE="${ELASTIC_AGENT_CLIENT}.proto"
+DEPRECATED_OUTPUT_FILE="${ELASTIC_AGENT_CLIENT_DEPRECATED}.proto"
+FUTURE_OUTPUT_FILE="${ELASTIC_AGENT_CLIENT_FUTURE}.proto"
+
+rm -rf $PROTO_DIR
+mkdir -p ${PROTO_DIR}
+
+curl -L -o $PROTO_DIR/$OUTPUT_FILE ${PROTO_SRC}
+curl -L -o $PROTO_DIR/$DEPRECATED_OUTPUT_FILE ${DEPRECATED_PROTO_SRC}
+curl -L -o $PROTO_DIR/$FUTURE_OUTPUT_FILE ${FUTURE_PROTO_SRC}
+
+
+# Generate
 rm ./elastic_agent_client/generated/elastic_agent*.py*
 
 bin/python -m grpc_tools.protoc \
