@@ -6,7 +6,7 @@ set -euo pipefail
 source .buildkite/script/shared.sh
 source .buildkite/script/git-setup.sh
 
-make generate
+make generate SCRIPT_DIR="../scripts"
 
 if [ -z "$(git status --porcelain | grep elastic_agent_client/generated)" ]; then
   exit 0
