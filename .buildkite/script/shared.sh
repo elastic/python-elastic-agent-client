@@ -51,8 +51,8 @@ is_pr() {
 }
 
 is_fork() {
-  if [ "$BUILDKITE_PULL_REQUEST_REPO" = "https://github.com/elastic/connectors.git" ]; then
-    echo "Running against real connectors repo"
+  if [ "$BUILDKITE_PULL_REQUEST_REPO" = "git://github.com/elastic/python-elastic-agent-client.git" ]; then
+    echo "Running against real python-elastic-agent-client repo"
     return 1 # false
   else
     echo "Running against a fork"
