@@ -6,7 +6,7 @@
 #!/bin/bash
 set -x
 
-source scripts/proto-common.sh
+source ./scripts/proto-common.sh
 
 PROTO_SRC="https://raw.githubusercontent.com/elastic/elastic-agent-client/main/${ELASTIC_AGENT_CLIENT}.proto"
 DEPRECATED_PROTO_SRC="https://raw.githubusercontent.com/elastic/elastic-agent-client/main/${ELASTIC_AGENT_CLIENT_DEPRECATED}.proto"
