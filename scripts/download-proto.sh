@@ -5,9 +5,8 @@
 #
 #!/bin/bash
 set -x
-SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
-source ${SCRIPT_DIR}/proto-common.sh
+source scripts/proto-common.sh
 
 PROTO_SRC="https://raw.githubusercontent.com/elastic/elastic-agent-client/main/${ELASTIC_AGENT_CLIENT}.proto"
 DEPRECATED_PROTO_SRC="https://raw.githubusercontent.com/elastic/elastic-agent-client/main/${ELASTIC_AGENT_CLIENT_DEPRECATED}.proto"

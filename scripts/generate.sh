@@ -6,11 +6,8 @@
 #!/bin/bash
 set -x
 
-if [ -z "$SCRIPT_DIR" ]; then
-  SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-fi
 
-source ${SCRIPT_DIR}/proto-common.sh
+source scripts/proto-common.sh
 GEN_PY_DIR="elastic_agent_client/generated"
 
 rm elastic_agent_client/generated/elastic_agent*.py*
