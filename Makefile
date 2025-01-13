@@ -20,7 +20,6 @@ dev: bin/python
 
 
 generate: bin/python dev
-	./scripts/download-proto.sh
 	./scripts/generate.sh
 
 install: bin/python dev
