@@ -2,7 +2,7 @@
   "jobs": [
     {
       "enabled": true,
-      "pipeline_slug": "python-elastic-agent-client",
+      "pipelineSlug": "python-elastic-agent-client",
       "allow_org_users": true,
       "allowed_repo_permissions": [
         "admin",
