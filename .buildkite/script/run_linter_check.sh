@@ -6,10 +6,11 @@ set -euo pipefail
 source .buildkite/script/shared.sh
 
 if is_pr && ! is_fork && ! has_skip_label; then
+  echo "We're on PR, running autoformat"
+
   export GH_TOKEN="$VAULT_GITHUB_TOKEN"
   source .buildkite/script/git-setup.sh
 
-  echo "We're on PR, running autoformat"
   if ! make autoformat ; then
     echo "make autoformat ran with errors, exiting"
     exit 1
