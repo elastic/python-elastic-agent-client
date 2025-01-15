@@ -28,4 +28,3 @@ else
   make notice
   exit 0
 fi
-
