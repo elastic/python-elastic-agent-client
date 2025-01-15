@@ -5,7 +5,7 @@ set -euo pipefail
 
 source .buildkite/script/shared.sh
 
-if is_pr && ! is_fork; then
+if is_pr && ! is_fork && ! has_skip_label; then
   echo "We're on PR, running autoformat"
   if ! make autoformat ; then
     echo "make autoformat ran with errors, exiting"
@@ -28,7 +28,7 @@ if is_pr && ! is_fork; then
     exit 1
   fi
 else
-  echo "We're not on PR or running against a fork, running only linter"
+  echo "Skipping autofix, running only linter"
   # On non-PR branches the bot has no permissions to open PRs.
   # Theoretically this would never fail because we always ask
   # linter to succeed to merge. It can fail intermittently?

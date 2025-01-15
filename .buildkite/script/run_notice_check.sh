@@ -13,7 +13,7 @@ if [ -z "$(git status --porcelain | grep NOTICE.txt)" ]; then
 else 
   echo 'New changes to NOTICE.txt:'
   git --no-pager diff
-  if is_pr && ! is_fork; then
+  if is_pr && ! is_fork && !has_skip_label; then
     echo 'Running on a PR that is not a fork, will commit changes'
     source .buildkite/script/git-setup.sh
     export GH_TOKEN="$VAULT_GITHUB_TOKEN"
@@ -23,7 +23,7 @@ else
     git push
     sleep 15
   else
-    echo 'Running against a fork or a non-PR change, skipping pushing changes and just failing instead'
+    echo 'Skipping autofix'
   fi
 
   exit 1
