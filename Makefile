@@ -13,6 +13,8 @@ bin/twine: dev
 
 dev: bin/python
 	bin/pip install -r requirements.txt
+
+notice: dev bin/python
 	echo "python-elastic-agent-client" > NOTICE.txt
 	echo "Copyright 2024 Elasticsearch B.V." >> NOTICE.txt
 	echo "" >> NOTICE.txt
@@ -22,7 +24,7 @@ dev: bin/python
 generate: bin/python dev
 	./scripts/generate.sh
 
-install: bin/python dev
+install: bin/python dev notice
 	bin/pip install -e .
 
 build: install bin/hatch bin/twine
