@@ -47,7 +47,9 @@ has_skip_label() {
   for label in "${labels[@]:-}"
   do
     if [ "$label" == "$MATCH" ]; then
+      echo "Found $MATCH label"
       return
     fi
+    echo "Didn't find $MATCH label"
   done
 }
