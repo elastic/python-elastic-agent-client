@@ -48,8 +48,10 @@ has_skip_label() {
   do
     if [ "$label" == "$MATCH" ]; then
       echo "Found $MATCH label"
-      return
+      return 0 # true
     fi
     echo "Didn't find $MATCH label"
   done
+
+  return 1 # false
 }
