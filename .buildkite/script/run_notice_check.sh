@@ -6,9 +6,6 @@ set -euo pipefail
 source .buildkite/script/shared.sh
 
 if is_pr && ! is_fork && ! has_skip_label; then
-  echo 'Skipping autofix'
-  make notice
-else
   export GH_TOKEN="$VAULT_GITHUB_TOKEN"
   source .buildkite/script/git-setup.sh
   make notice
@@ -26,6 +23,9 @@ else
 
      exit 1
    fi
+else
+  echo 'Skipping autofix'
+  make notice
+  exit 0
 fi
 
-exit 0
