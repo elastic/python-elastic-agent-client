@@ -49,7 +49,7 @@ def new_v2_from_reader(reader, ver, opts: V2Options):
     client.target = info.addr
     client.opts = opts
     client.token = info.token
-    client.agent_info =     info.agent_info
+    client.agent_info = info.agent_info
     client.version_info = ver
     client.units = []
     client.client = ElasticAgentStub(channel)
