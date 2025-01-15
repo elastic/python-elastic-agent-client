@@ -5,8 +5,6 @@ set -euo pipefail
 
 source .buildkite/script/shared.sh
 
-init_python
-
 make notice
 
 if [ -z "$(git status --porcelain | grep NOTICE.txt)" ]; then
