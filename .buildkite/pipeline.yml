@@ -1,6 +1,6 @@
 agents:
   useVault: true
-  image: "python:3.10@sha256:66578014a8b4da2a5b6dbe24907b864e9ae4082aa8897ec17df4b90dece53da6"
+  image: "python:3.10@sha256:989f09f383a4508e837d8c02226c20e2a1111127d386f589e63ceb404f376c6d"
 
 steps:
   - label: ":face_with_peeking_eye: Lint"
