@@ -6,6 +6,9 @@ set -euo pipefail
 source .buildkite/script/shared.sh
 
 if is_pr && ! is_fork && ! has_skip_label; then
+  export GH_TOKEN="$VAULT_GITHUB_TOKEN"
+  source .buildkite/script/git-setup.sh
+
   echo "We're on PR, running autoformat"
   if ! make autoformat ; then
     echo "make autoformat ran with errors, exiting"
@@ -16,10 +19,8 @@ if is_pr && ! is_fork && ! has_skip_label; then
     echo "Nothing to be fixed by autoformat"
     exit 0
   else
-    source .buildkite/script/git-setup.sh
     git --no-pager diff
     echo "linting errors are fixed, pushing the diff"
-    export GH_TOKEN="$VAULT_GITHUB_TOKEN"
 
     git add .
     git commit -m"make autoformat"
