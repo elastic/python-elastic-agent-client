@@ -13,7 +13,7 @@ if [ -z "$(git status --porcelain | grep NOTICE.txt)" ]; then
 else 
   echo 'New changes to NOTICE.txt:'
   git --no-pager diff
-  if is_pr && ! is_fork && !has_skip_label; then
+  if is_pr && ! is_fork && ! has_skip_label; then
     echo 'Running on a PR that is not a fork, will commit changes'
     source .buildkite/script/git-setup.sh
     export GH_TOKEN="$VAULT_GITHUB_TOKEN"
