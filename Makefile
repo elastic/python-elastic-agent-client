@@ -23,6 +23,10 @@ notice: dev bin/python
 
 generate: bin/python dev
 	./scripts/generate.sh
+	echo "Running import tests for generated files"
+	bin/python -c "import elastic_agent_client.generated.elastic_agent_client_pb2"
+	bin/python -c "import elastic_agent_client.generated.elastic_agent_client_future_pb2"
+	bin/python -c "import elastic_agent_client.generated.elastic_agent_client_deprecated_pb2"
 
 install: bin/python dev notice
 	bin/pip install -e .

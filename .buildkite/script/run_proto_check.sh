@@ -6,8 +6,7 @@ set -euo pipefail
 source .buildkite/script/shared.sh
 source .buildkite/script/git-setup.sh
 
-# We do test to check that generated files are compatible with code
-make generate test
+make generate
 
 if [ -z "$(git status --porcelain | grep elastic_agent_client/generated)" ]; then
   exit 0
