@@ -3,6 +3,10 @@
 PYTHON=python3.10
 SLOW_TEST_THRESHOLD=1 # seconds
 
+
+
+
+
 bin/python:
 	$(PYTHON) -m venv .
 	bin/pip install --upgrade pip

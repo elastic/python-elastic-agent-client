@@ -1,6 +1,11 @@
 python-elastic-agent-client
 Copyright 2024 Elasticsearch B.V.
 
+
+
+
+
+
 ecs-logging
 2.2.0
 Apache Software License
