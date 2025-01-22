@@ -1,11 +1,7 @@
 #!/bin/bash
 set -ex
 
-if [ -z "${GITHUB_PR_BRANCH+x}" ]; then
-  export GIT_BRANCH=${BUILDKITE_BRANCH}
-else
-  export GIT_BRANCH=${GITHUB_PR_BRANCH}
-fi
+export GIT_BRANCH=${GITHUB_PR_BRANCH:-BUILDKITE_BRANCH}
 
 git switch -
 git checkout $GIT_BRANCH
