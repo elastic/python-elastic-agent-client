@@ -3,8 +3,20 @@ agents:
   image: "python:3.10@sha256:eb7df628043d68aa30019fed02052bd27f1431c3a0abe9299d1e4d804d4b11e0"
 
 steps:
+  - label: ":eyes: Check notice file"
+    command: ".buildkite/script/run_notice_check.sh"
+    timeout_in_minutes: 5
+
+  - wait
+
   - label: ":face_with_peeking_eye: Lint"
-    command: "make lint"
+    command: ".buildkite/script/run_linter_check.sh"
+    timeout_in_minutes: 5
+
+  - wait
+
+  - label: ":proto: Check proto files"
+    command: ".buildkite/script/run_proto_check.sh"
     timeout_in_minutes: 5
 
   - label: ":pytest: Test"
