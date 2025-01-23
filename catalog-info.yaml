@@ -23,6 +23,8 @@ spec:
     spec:
       repository: elastic/python-elastic-agent-client
       pipeline_file: ".buildkite/pipeline.yml"
+      provider_settings:
+        skip_pull_request_builds_for_existing_commits: false
       teams:
         search-extract-and-transform:
           access_level: MANAGE_BUILD_AND_READ
