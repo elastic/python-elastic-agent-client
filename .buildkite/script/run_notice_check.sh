@@ -10,19 +10,19 @@ if is_pr && ! is_fork && ! has_skip_label; then
   source .buildkite/script/git-setup.sh
   make notice
 
-   if [ -z "$(git status --porcelain | grep NOTICE.txt)" ]; then
-     echo 'Nothing changed'
-     exit 0
-   else
-     echo 'New changes to NOTICE.txt:'
-     git --no-pager diff
+  if [ -z "$(git status --porcelain | grep NOTICE.txt)" ]; then
+    echo 'Nothing changed'
+    exit 0
+  else
+    echo 'New changes to NOTICE.txt:'
+    git --no-pager diff
 
-     git add NOTICE.txt
-     git commit -m"Update NOTICE.txt"
-     git push
+    git add NOTICE.txt
+    git commit -m"Update NOTICE.txt"
+    git push
 
-     exit 1
-   fi
+    exit 1
+  fi
 else
   echo 'Skipping autofix'
   make notice
