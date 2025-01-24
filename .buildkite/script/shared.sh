@@ -9,7 +9,7 @@ is_pr() {
 }
 
 is_fork() {
-  if [ "$BUILDKITE_PULL_REQUEST_REPO" = "git://github.com/elastic/python-elastic-agent-client.git" ]; then
+  if [ "$BUILDKITE_PULL_REQUEST_REPO" = "git://github.com/elastic/python-elastic-agent-client.git" ] || [ "$BUILDKITE_PULL_REQUEST_REPO" = "git://github.com/elastic/python-elastic-agent-client.git" ]; then
     echo "Running against real python-elastic-agent-client repo"
     return 1 # false
   else
