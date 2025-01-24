@@ -2,7 +2,7 @@ grpcio==1.68.1
 grpcio-tools==1.68.1
 protobuf==5.28.1
 uvloop==0.21.0
-elasticsearch[async]==8.17.0
+elasticsearch[async]==8.17.1
 ecs-logging==2.2.0
 types-protobuf==5.28.3.20241203
 
@@ -17,4 +17,4 @@ pytest-fail-slow==0.6.0
 mypy==1.14.1
 pip-licenses==5.0.0
 hatch==1.14.0
-twine==6.0.1
+twine==6.1.0
