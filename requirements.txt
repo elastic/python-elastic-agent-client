@@ -4,7 +4,9 @@ protobuf==5.28.1
 uvloop==0.21.0
 elasticsearch[async]==8.17.0
 ecs-logging==2.2.0
+types-protobuf==5.28.0.20240924
 
+# dev
 ruff==0.8.6
 pytest==8.3.4
 pytest-cov==6.0.0
@@ -13,7 +15,6 @@ pytest-mock==3.14.0
 pytest-randomly==3.16.0
 pytest-fail-slow==0.6.0
 mypy==1.14.1
-types-protobuf==5.27.0.20240907
 pip-licenses==5.0.0
 hatch==1.14.0
 twine==6.0.1
