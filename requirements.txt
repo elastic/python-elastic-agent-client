@@ -4,7 +4,7 @@ protobuf==5.28.1
 uvloop==0.21.0
 elasticsearch[async]==8.17.0
 ecs-logging==2.2.0
-types-protobuf==5.28.0.20240924
+types-protobuf==5.28.3.20241203
 
 # dev
 ruff==0.8.6
