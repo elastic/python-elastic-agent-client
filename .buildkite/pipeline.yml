@@ -1,6 +1,6 @@
 agents:
   useVault: true
-  image: "python:3.10@sha256:eb7df628043d68aa30019fed02052bd27f1431c3a0abe9299d1e4d804d4b11e0"
+  image: "python:3.10@sha256:1ee5f160e00938dfa6755a8f70df65b3e36442f8005f142c121c6e2617f2f285"
 
 steps:
   - label: ":eyes: Check notice file"
