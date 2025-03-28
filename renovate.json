@@ -3,6 +3,9 @@
   "extends": [
     "local>elastic/renovate-config"
   ],
+  "schedule": [
+    "* * * * 0,6"
+  ],
   "ignoreDeps": [
     "protobuf",
     "types-protobuf"
