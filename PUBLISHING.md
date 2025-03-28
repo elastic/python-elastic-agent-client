@@ -21,5 +21,5 @@ Secrets for publishing to live PyPi are in `ent-search-team/pypi-ent-search-dev`
 5. Check the package on https://test.pypi.org/project/elastic-agent-client - check readme, version, other things that you consider important
 6. Do a prod publish: `make release`. When prompted for an api key, insert a key from running this command: `vault read -field publishing-api-key secret/ent-search-team/pypi-ent-search-dev`
 7. Check the package on https://pypi.org/project/elastic-agent-client - check readme, version, other things that you consider important
-8. Bump version in the version file: https://github.com/elastic/python-elastic-agent-client/blob/main/elastic_agent_client/version.py
+8. Tag the revision that was used for release and push the tag: `git tag <version> <sha> && git push origin tag <version>`, for example `git tag v0.0.1dev2 ab69e812aabea460439740199a9a94df88cd2a6e && git push origin tag v0.0.1dev2`
 9. Done!
