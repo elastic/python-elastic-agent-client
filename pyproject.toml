@@ -28,8 +28,8 @@ requires-python = ">=3.10"
 # to the [tools.pip-licenses].packages definition.
 dependencies = [
     "grpcio>=1.71, <1.72",
-    "grpcio-tools>=1.65, <1.69",
-    "protobuf>=5.28, <5.29",
+    "grpcio-tools>=1.71, <1.72",
+    "protobuf>=5.29, <5.30",
     "types-protobuf>=5.28, <5.29",
     "uvloop>=0.20, <1",
     "ecs-logging>=2"

@@ -6,7 +6,7 @@ import warnings
 from . import elastic_agent_client_deprecated_pb2 as elastic__agent__client__deprecated__pb2
 from . import elastic_agent_client_pb2 as elastic__agent__client__pb2
 
-GRPC_GENERATED_VERSION = '1.68.1'
+GRPC_GENERATED_VERSION = '1.71.0'
 GRPC_VERSION = grpc.__version__
 _version_not_supported = False
 

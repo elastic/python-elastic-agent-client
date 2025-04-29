@@ -622,12 +622,12 @@ Exhibit B - "Incompatible With Secondary Licenses" Notice
 
 
 grpcio-tools
-1.68.1
+1.71.0
 Apache Software License
 UNKNOWN
 
 protobuf
-5.28.1
+5.29.0
 3-Clause BSD License
 Copyright 2008 Google Inc.  All rights reserved.
 
