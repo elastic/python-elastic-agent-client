@@ -3,6 +3,7 @@
 # or more contributor license agreements. Licensed under the Elastic License 2.0;
 # you may not use this file except in compliance with the Elastic License 2.0.
 #
+from dataclasses import dataclass
 from typing import Optional
 
 import elastic_agent_client.generated.elastic_agent_client_pb2 as proto
@@ -16,6 +17,7 @@ from elastic_agent_client.generated.elastic_agent_client_pb2_grpc import (
 )
 
 
+@dataclass
 class VersionInfo:
     def __init__(
         self, name: str, meta: Optional[dict] = None, build_hash: Optional[str] = None
