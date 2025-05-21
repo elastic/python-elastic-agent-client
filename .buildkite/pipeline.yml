@@ -2,6 +2,13 @@ agents:
   useVault: true
   image: "python:3.10@sha256:d188cfc2b726fa69a76d1eaebb50a80bc61fa312a4aad6bbda145b0ec77dcf75"
 
+notify:
+  - if: 'build.branch =~ /^((main)|([0-9]+\.[0-9]+))\$/ && (build.state == "failed" || pipeline.started_passing)'
+    slack:
+      channels:
+        - "#search-et-alerts"
+      message: "${BUILDKITE_MESSAGE}"
+
 steps:
   - label: ":eyes: Check notice file"
     command: ".buildkite/script/run_notice_check.sh"
