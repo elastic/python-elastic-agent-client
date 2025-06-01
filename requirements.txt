@@ -14,7 +14,7 @@ pytest-asyncio==0.26.0
 pytest-mock==3.14.0
 pytest-randomly==3.16.0
 pytest-fail-slow==0.6.0
-mypy==1.15.0
+mypy==1.16.0
 pip-licenses==5.0.0
 hatch==1.14.1
 twine==6.1.0
