@@ -7,7 +7,7 @@ ecs-logging==2.2.0
 types-protobuf==5.28.3.20241203
 
 # dev
-ruff==0.11.12
+ruff==0.11.13
 pytest==8.3.5
 pytest-cov==6.1.1
 pytest-asyncio==1.0.0
