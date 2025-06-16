@@ -27,7 +27,7 @@ requires-python = ">=3.10"
 # If you add a dependancy here you will need to add it below
 # to the [tools.pip-licenses].packages definition.
 dependencies = [
-    "grpcio>=1.72, <1.73",
+    "grpcio>=1.73, <1.74",
     "grpcio-tools>=1.71, <1.72",
     "protobuf>=5.29, <5.30",
     "types-protobuf>=5.28, <5.29",
