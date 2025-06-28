@@ -7,7 +7,7 @@ Apache Software License
 UNKNOWN
 
 grpcio
-1.73.0
+1.73.1
 Apache Software License
 
                                  Apache License
