@@ -2,15 +2,15 @@ grpcio==1.74.0
 grpcio-tools==1.71.0
 protobuf==5.29.0
 uvloop==0.21.0
-elasticsearch[async]==9.0.2
+elasticsearch[async]==9.1.0
 ecs-logging==2.2.0
 types-protobuf==5.28.3.20241203
 
 # dev
 ruff==0.12.8
 pytest==8.4.2
-pytest-cov==6.1.1
-pytest-asyncio==1.0.0
+pytest-cov==6.3.0
+pytest-asyncio==1.1.0
 pytest-mock==3.14.1
 pytest-randomly==3.16.0
 pytest-fail-slow==0.6.0
