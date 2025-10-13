@@ -17,4 +17,4 @@ pytest-fail-slow==0.6.0
 mypy==1.18.2
 pip-licenses==5.0.0
 hatch==1.14.2
-twine==6.1.0
+twine==6.2.0
