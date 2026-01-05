@@ -1,6 +1,6 @@
 agents:
   useVault: true
-  image: "python:3.10@sha256:9dfdc46c03ab162fa0014db86b391e6de48b53d0ac1ea26ac2677755595a426f"
+  image: "python:3.10@sha256:bcc149dce8e0b1bf879ad69c253ef39351f1a4b8ced55a5ce594cec159aad65a"
 
 notify:
   - if: 'build.branch =~ /^((main)|([0-9]+\.[0-9]+))\$/ && (build.state == "failed" || pipeline.started_passing)'
