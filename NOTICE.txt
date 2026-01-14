@@ -906,7 +906,7 @@ DEALINGS IN THE SOFTWARE.
 
 
 uvloop
-0.21.0
+0.22.1
 Apache Software License; MIT License
 Copyright (C) 2016-present the uvloop authors and contributors.
 
