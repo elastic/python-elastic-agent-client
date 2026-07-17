@@ -12,7 +12,8 @@ bin/hatch: dev
 bin/twine: dev
 
 dev: bin/python
-	bin/pip install -r requirements.txt
+	bin/pip install -e .
+	bin/pip install -e .[dev]
 
 notice: dev bin/python
 	echo "python-elastic-agent-client" > NOTICE.txt
