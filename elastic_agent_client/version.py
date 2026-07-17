@@ -4,4 +4,4 @@
 # you may not use this file except in compliance with the Elastic License 2.0.
 #
 
-__version__ = "0.0.1.dev2"
+__version__ = "0.0.2"
